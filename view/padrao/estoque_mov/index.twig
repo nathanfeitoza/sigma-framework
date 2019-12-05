@@ -1,0 +1,436 @@
+{% extends "base.twig" %}
+{% set unidades_select = montar_options(unidades_medidas, false, 'CODIGO', ['CODIGO','NOME']) %}
+
+{% block estilos_adicionais %}
+	<link rel="stylesheet" href="{{baseTema}}/estoque_mov/estoque_mov.css?v={{ date().timestamp }}">
+	<script type="text/javascript">var formas_pagto_var = '{% autoescape %} {{ formas_pagtos_var|raw }} {% endautoescape %}';</script>
+	<style type="text/css">
+		{% if doc_id != -1 or chave_nfe != -1 %}
+			.importar-xml{
+				display: none;
+			}
+		{% endif %}
+		.ajustar-margin {
+			margin-right: -25px;
+		}
+
+		@-moz-document url-prefix() {
+			.ajustar-margin {
+				margin-right: -18px;
+			}
+		}
+	</style>
+{% endblock %}
+{% block main %}
+
+<div class="container-fluid"> <!-- Inicio Container -->
+<div class="margin-panel card"> <!-- Inicio Panel Principal -->
+	<div class="card-header">{{titulo_app}}</div>
+  <div class="card-body"> <!-- Inicio Panel Principal Body -->
+
+ 	<div class="row"> <!-- Row tab panes -->
+		<ul class="nav nav-tabs" id="myTab" role="tablist">
+			<li class="nav-item">
+				<a class="nav-link active" id="resumo-nota-tab" data-toggle="tab" href="#resumo-nota" role="tab" aria-controls="resumo-nota" aria-selected="true">Resumo da Nota [F6]</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" id="produtos-tab" data-toggle="tab" href="#produtos" role="tab" aria-controls="produtos" aria-selected="false">Produtos [F7]</a>
+			</li>
+			{% if tipo_mov == 1 %}
+			<li class="nav-item">
+				<a class="nav-link" id="importacao-xml-tab" data-toggle="tab" href="#importacao-xml" role="tab" aria-controls="importacao-xml" aria-selected="false">Importação do XML [F8]</a>
+			</li>
+			{% endif %}
+
+			<li class="nav-item">
+				<a class="nav-link" id="dados-fornecedor-tab" data-toggle="tab" href="#dados-fornecedor" role="tab" aria-controls="settings" aria-selected="false">Dados do {{ (tipo_mov == 1) ? 'fornecedor' : 'cliente' }} [F9]</a>
+			</li>
+		</ul>
+
+		<form id="form_nfe" novalidate>
+		<div class="tab-content col-md-12">
+
+			<div class="tab-pane active" id="resumo-nota" role="tabpanel" aria-labelledby="resumo-nota-tab">
+
+				<div class="row inputs-mais-proximos">
+					<div class="col-md-3 a ">
+						<label for="nome_cliente_destin">{{ (tipo_mov == 1) ? 'Nome do Fornecedor' : 'Nome do Cliente' }}</label>
+						<input type="text" id="nome_cliente_destin" required name="nome_cliente"	class="form-control nome_cliente" placeholder="Nome do Cliente/Destinatário">
+					</div>
+
+					<div class="col-md-2 is ">
+						<label for="cpf_cnpj">CPF/CNPJ</label>
+						<input type="text" id="cpf_cnpj" required name="cpf_cnpj"	class="form-control validar-cpf-cnpj cnpj_cliente somente-numero not-blur" data-option="{ponto: false, virgula: false, decs: 100, negativo: false, per_cent: false}" placeholder="CPF/CNPJ">
+					</div>
+				</div>
+
+				<div class="row inputs-mais-proximos">
+					<div class="col-md-1 ajustar1">
+						<label for="documento">Documento</label>
+						<input type="text" id="documento" name="documento" maxlength="10" required class="form-control" placeholder="Documento">
+					</div>
+
+					<div class="col col-md-2 dt ">
+						<label id="label_saida" for="saida">{{ (tipo_mov == 1) ? 'Data de Entrada' : 'Data de Saída' }}</label>
+						<div class="input-group mb-2 date" data-date-format="dd/mm/yyyy">
+							<input class="form-control data-pk _saida data_emissao" required id="saida" type="text">
+							<!-- <div class="input-group-text add-on"><i class="fas fa-calendar"></i></div> -->
+						</div>
+					</div>
+
+					<div class="col-md-1 ab ">
+						<label for="modelo_doc">Modelo Documento</label>
+						<select class="form-control no" id="modelo_doc" name="modelo_doc">
+							<option value="55" role-option-select="55 - NFe">55 - NFe</option>
+							<option value="65" role-option-select="65 - NFC-e">65 - NFC-e</option>
+							<option value="99" role-option-select="99 - Diversos">99 - Diversos</option>
+						</select>
+					</div>
+
+					<div class="col-md-3 c ">
+						<label for="chave_nfe">Chave NFE</label>
+						<input type="tel" id="chave_nfe" name="chave_nfe" maxlength="44" data-option="{virgula: false, ponto: false}" class="form-control somente-numero not-blur chave_nfe" placeholder="Chave da NFE">
+					</div>
+
+					<div class="col-md-1 ajustar2">
+						<label for="autorizacao_nfe">Autorização NFE</label>
+						<input type="text" id="autorizacao_nfe" name="autorizacao_nfe" maxlength="10" data-option="{virgula: false, ponto: false}" class="form-control somente-numero not-blur autorizacao_nfe" placeholder="Autorização">
+					</div>
+
+                    {% if tipo_mov != 1 %}
+						<div class="col-md-1 un ">
+							<label for="turno">Turno</label>
+							<input type="tel" class="form-control somente-numero not-blur" data-option="{ponto: false, virgula: false, decs: 0}" required placeholder="1" maxlength="1" id="turno" name="turno">
+						</div>
+
+						<div class="col-md-1 un ">
+							<label for="pdv">PDV</label>
+							<input type="tel" id="pdv" maxlength="1" required class="form-control somente-numero not-blur" data-option="{ponto: false, virgula: false, decs: 0}" name="pdv" placeholder="PDV">
+						</div>
+
+						<div class="col-md-1 s a ">
+							<label for="serie">Série</label>
+							<input type="tel"  id="serie" maxlength="3" class="form-control serie somente-numero not-blur" data-option="{ponto: false, virgula: false, decs: 0}" name="serie" placeholder="Série" required>
+						</div>
+
+						<div class="col-md-1 p ">
+							<label for="pre_venda_id">Pré-Venda</label>
+							<input type="tel" id="pre_venda_id" class="form-control somente-numero not-blur" data-option="{ponto: false, virgula: false, decs: 0}" name="pre_venda_id" placeholder="Pré-Venda">
+						</div>
+                    {% endif %}
+
+					<div class="col-md-1 is ">
+						<label for="inscr_estadual">Inscrição Estadual</label>
+						<select id="inscr_estadual" class="form-control" name="inscr_estadual">
+							<option value="ISENTO" role-option-select="ISENTO">ISENTO</option>
+							<option value="NÃO CONTRIBUINTE" role-option-select="NÃO CONTRIBUINTE">NÃO CONTRIBUINTE</option>
+						</select>
+					</div>
+                    {% if tipo_mov != 1 %}
+						<div class="col-md-1 f a ">
+							<label for="f_nfe">Finalidade da NFE</label>
+							<select class="form-control" id="f_nfe" name="f_nfe">
+								<option value="1" role-option-select="1 - Normal">1 - Normal</option>
+								<option value="1" role-option-select="2 - Complementar">2 - Complementar</option>
+								<option value="1" role-option-select="3 - Ajuste">3 - Ajuste</option>
+								<option value="1" role-option-select="4 - Devolução">4 - Devolução</option>
+							</select>
+						</div>
+                    {% endif %}
+
+				</div>
+
+				<div class="row inputs-mais-proximos">
+
+					<div class="col-md-2 a1 chosen-fixo">
+						<label for="vendedor">Vendedor</label>
+						<select role-execute="buscarVendedorSelect" class="form-control vendedor_id ajustar-completo chosen-ativar" id="vendedor" name="vendedor">
+                            {{vendedores_var|raw}}
+						</select>
+					</div>
+
+					<div class="col-md-2 a2 chosen-fixo">
+						<label for="caixa">Caixa</label>
+						<select role-execute="buscarVendedorSelect" class="form-control caixa_id ajustar-completo chosen-ativar" id="caixa" name="caixa">
+                            {{vendedores_var|raw}}
+						</select>
+					</div>
+
+					<div class="col-md-2 s1  ">
+						<label for="fr_pg">Forma de Pagamento</label>
+						<select class="form-control forma_pagto" id="fr_pg" name="forma_pagto[]">
+                            {% autoescape %}
+                                {{ formas_pagtos_var|raw }}
+                            {% endautoescape %}
+							<option role-option-select="MULTIPLAS FORMAS" value="-1">MULTIPLAS FORMAS</option>
+						</select>
+						<button class="btn btn-default btn-multiplas-formas" type="button"><i class="fas fa-eye"></i></button>
+					</div>
+					<div class="col-md-2 n ">
+						<label>Valor Pago</label>
+						<input type="tel" disabled="" class="form-control money total_valor_pago not-blur somente-numero" value="0,00">
+					</div>
+				</div>
+
+			</div>
+
+			<div class="tab-pane" id="produtos" role="tabpanel" aria-labelledby="produtos-tab">
+
+				<div class="col col-md-12" style="padding-right: 0; padding-left: 0;">
+					<form class="">
+						<div class="div-tabela-estoque-mov"></div>
+					</form>
+				</div>
+
+
+			</div>
+
+			{% if tipo_mov == 1 %}
+			<div class="tab-pane" id="importacao-xml" role="tabpanel" aria-labelledby="importacao-xml-tab">
+
+				<div class="row row-tabela-chave-nfe">
+					<div class="col col-md-12 coluna-principal">
+						<div class="dados_import_nota">
+							<div class="col-md-12" style="z-index: 999;">
+								<div class="cabec_nfe"></div>
+							</div>
+
+							<div class="col-md-12">
+								<div class="div_tabela_nfe"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+            {% endif %}
+
+
+				<div class="tab-pane" id="dados-fornecedor" role="tabpanel" aria-labelledby="dados-fornecedor-tab">
+
+					<form class="dados-fornecedor">
+						<div class="row inputs-mais-proximos">
+
+						<div class="col-md-3 a ">
+							<label for="nome_cliente_destin2">{{ (tipo_mov == 1) ? 'Nome do Fornecedor' : 'Nome do Cliente' }}</label>
+							<input type="text" id="nome_cliente_destin2" class="form-control nome_cliente" placeholder="Nome do Cliente/Destinatário">
+						</div>
+
+						<div class="col-md-2 is ">
+							<label for="cpf_cnpj2">CPF/CNPJ</label>
+							<input type="text" id="cpf_cnpj2" class="form-control validar-cpf-cnpj cnpj_cliente somente-numero not-blur" data-option="{ponto: false, virgula: false, decs: 100, negativo: false, per_cent: false}" placeholder="CPF/CNPJ">
+						</div>
+
+						<div class="col-md-2 cp">
+							<label for="cep">CEP</label>
+							<input class="form-control cep_cliente somente-numero not-blur" data-option="{ponto: false, virgula: false, decs: 100, negativo: false, per_cent: false}" required placeholder="CEP" id="cep" name="cep">
+						</div>
+
+						<div class="col-md-4">
+							<label for="endereco">Endereço</label>
+							<input required class="form-control logradouro logradouro_cliente" placeholder="Endereço" id="endereco" name="endereco">
+						</div>
+
+						<div class="col-md-1 n ">
+							<label for="numero">N°</label>
+							<input required class="form-control numero_cliente somente-numero not-blur" data-option="{ponto: false, virgula: false, decs: 100, negativo: false, per_cent: false}" placeholder="N°" id="numero" name="numero" type="tel">
+						</div>
+
+						<div class="col-md-2 e ">
+							<label for="email">Email</label>
+							<input type="email" class="form-control email_cliente" placeholder="Email" id="email" name="email">
+						</div>
+
+						<div class="col-md-1 ajustar-telefone" style="margin-left: 0;">
+							<label for="tel">Telefone</label>
+							<input class="form-control telefone_cliente somente-numero not-blur" type="tel" data-option="{ponto: false, virgula: false, decs: 100, negativo: false, per_cent: false}" required placeholder="Telefone" id="tel" name="tel">
+						</div>
+
+						<div class="col-md-2 nf ">
+							<label for="bairro">Bairro</label>
+							<input class="form-control" required placeholder="Bairro" id="bairro" name="bairro">
+						</div>
+
+						<div class="col-md-3 nf ">
+							<label for="cidade">Cidade</label>
+							<input class="form-control" required placeholder="Cidade" id="cidade" name="cidade">
+						</div>
+
+						<div class="col-md-1 u ">
+							<label for="uf">UF</label>
+							<input class="form-control" required placeholder="UF" id="uf" name="uf">
+						</div>
+
+					</div>
+					</form>
+
+					<!-- <div class="row float-right">
+						<div class="col-md-12">
+							<button class="btn btn-success salvar-fornecedor" type="button">Salvar </button>
+						</div>
+					</div> -->
+
+			</div>
+
+
+
+				<div class="col col-md-12 coluna-detalhes-nota" style="padding-right: 0; padding-left: 0; float: left; width: 100%;">
+					<div class="rodape_nfe"></div>
+					<div class="div-tabela-informacoes"></div>
+				</div>
+
+
+			<div class="col col-md-11 float-left" style="padding-right: 0; padding-left: 0;">
+
+					<button class="btn btn-success" type="submit" name="salvar">Salvar [F3]<div class="icon"></div></button>
+					<button class="btn btn-primary" type="button" name="gerar_xml">Gerar XML <div class="icon"></div></button>
+					<button class="btn btn-default btn_limpar" type="button" name="limpar">Novo <div class="icon"></div></button>
+					<button class="btn btn-warning" type="button" name="imprimir">Imprimir <div class="icon"></div></button>
+                    {% if tipo_mov == 1 %}
+						<button class="btn btn-warning importar-xml" type="button">Importar XML <div class="icon"></div></button>
+						<button class="btn btn-warning criar-produtos" type="button">Criar Produtos <div class="icon"></div></button>
+                    {% endif %}
+                    {% if doc_id != -1 or chave_nfe != -1 %}
+						<button class="btn btn-warning" type="button" name="remover_nota">Excluir Nota <div class="icon"></div></button>
+                    {% endif %}
+                    {{ voltar_tela_anterior | raw}}
+
+			</div>
+
+            {% if doc_id != -1 %}
+				<div class="col col-md-1 float-right" style="padding-right: 0; padding-left: 0;">
+					<span style="transform: translateX(-13px);">Id: {{ doc_id }}</span>
+				</div>
+            {% endif %}
+
+
+	    <!-- <div class="col-md-12" id="d_cabe"> <!-- Dados do Cabeçalho -->
+
+			<!--<div class="row ajustar-margin"> <!-- Inicio Coluna Formulário -->
+
+			<!--<div class="row firefox">
+                <!-- <form id="form_nfe" class="form-group form_nfe"> --> <!-- Inicio Form -->
+			<!--<div class="row">
+                <div class="col col-md-12">
+                    <div class="Inputar">
+
+                    </div>
+
+                      <div class="row margin-top-1">
+                      </div>
+                </div>
+            </div>
+
+
+                </div>
+          </div> -->
+
+	      	<!-- </form> --> <!-- Fim Form -->
+			<!-- </div> -->
+	  	</div>
+		</form>
+
+	 </div> <!-- Fim Painel Receber NF-e -->
+
+	  </div>  <!-- Fim Tab panes -->
+  </div>  <!-- Fim  Row Tab panes -->
+
+</div> <!-- Fim Panel Principal Body -->
+  </div> <!-- Fim Panel Principal -->
+
+
+
+</div> <!-- Fim Container -->
+
+{% endblock %}
+
+
+{% block scripts_adicionais %}
+	<script>  
+		var isFirefox = typeof InstallTrigger !== 'undefined'; 
+		st = $.parseJSON('{{st|json_encode()|raw}}'),
+		setor = $.parseJSON('{{setor|json_encode()|raw}}'),
+		width_div_table = $("."+$tabelas.tabela_produtos_man).parent().width(),
+		width_table = isFirefox ? false /*width_div_table * 1.1395  1.1232*/ : false;
+		tb_man = $('input'),//$("."+$tabelas.tabela_produtos_man).TabelaMultipla({height_body: 170, width_div_table: width_div_table, width_table: width_table}),
+		tipo_uso = {{tipo_mov}};
+
+		{% set unidade_permite_fracao = [] %}
+
+		{% for unidade in unidades_medidas %}
+			{% if unidade.PERMITE_FRACAO == 0 %}
+        		{% set unidade_permite_fracao = unidade_permite_fracao|merge([unidade.CODIGO]) %}
+			{% endif %}
+
+		{% endfor %}
+
+		const permite_fracao = JSON.parse('{{ unidade_permite_fracao | json_encode | raw }}')
+
+		const unidadesMedidasOptions = `{{ unidades_select | raw }}`;
+
+		var AjustarTBMAN = function() {
+		    return tb_man.Ajustar();
+		};
+
+		var cfop_aceitos = JSON.parse('{{dados_cfop|json_encode()|raw}}'),
+		options_cfop = '';
+
+		cfop_aceitos = cfop_aceitos.map(function(i,a){
+			var mostrar = i.NOME;
+			options_cfop += '<option '+$roles.role_mov_estoque+'="'+i.MOV_ESTOQUE+'" value="'+i.ID_CFOP+'" role-option-numero="1" '+$roles.role_option+'="'+mostrar+'">'+mostrar+'</option>';
+			return i.ID_CFOP;
+		})
+
+		{% if chave_nfe != -1 %}
+			{% if checkError(dados_nota_chave) == false %}
+			var dados_nota_chave = [JSON.parse('{{dados_nota_chave|json_encode|raw}}')],
+                dados_nota_chave_nfe = {
+				dados: undefined,
+				set c($c){
+					this.dados = $c;
+				},
+				get c(){
+					return this.dados;
+				}
+			};
+
+        	dados_nota_chave_nfe.dados = {data_msg: dados_nota_chave[0]};
+			var chave_nfe_atual = '{{chave_nfe}}';
+
+			{% else %}
+				{% set msg = dados_nota_chave == 322 ? 'A chave da NFE informada não possui 44 posições' : 'Arquivo XML da nota com a chave informada não encontrado'%}
+				{% set msg =  dados_nota_chave == 710 ? 'Nenhuma nota fiscal encontrada com esta chave' : msg %}
+				Mask();
+				mostrarMensagemErroSucessoAlerta('{{ msg }}', false, true, undefined, {NuncaFechar: true});
+			{% endif %}
+		{% endif %}
+
+        var doc_id = {
+            doc_id: undefined,
+            set DID($id){
+                this.doc_id = $id
+            },
+            get DID(){
+                return this.doc_id;
+            }
+        };
+
+		{% if doc_id != -1 and doc_id|strlen > 0%}
+			doc_id.doc_id = {{doc_id}};
+
+		{% if checkError(dados_pedido) == false and is_int(dados_pedido) == false %}
+			var doc_valores = JSON.parse('{{dados_pedido|json_encode|raw }}');
+			doc_valores = [doc_valores];
+		{% else %}
+			{% set msg = dados_pedido == -1 ? 'Nenhuma nota fiscal encontrada com o id ' ~ doc_id : 'Nenhum produto encontrado para a nota fiscal com o id ' ~ doc_id %}
+			$('body').html('');
+			Mask();
+	    	mostrarMensagemErroSucessoAlerta('{{ msg }}', false, true, undefined, {NuncaFechar: true});
+
+		{% endif %}
+		{% endif %}
+
+		$("."+$ClassesAvulsas.chosen_ativar).chosen2();
+  	</script>
+	<script type="text/javascript" src="{{baseTema}}/estoque_mov/estoque_mov.js?v={{ date().timestamp }}"></script>
+{% endblock %}

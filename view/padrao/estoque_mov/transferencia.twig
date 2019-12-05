@@ -1,0 +1,145 @@
+{% extends "base.twig" %}
+{% set doc_id = getQueryParam('doc_id') %}
+{% set filiais_var = "" %}
+{% set setores_origem = "" %}
+
+{% if checkError(filiais) == false %}
+    {% for dados in filiais|cast_to_array %}
+        {% set dados = dados|cast_to_array%}
+        {% set filiais_var = filiais_var ~ '<option role-option-select="' ~ dados["ID"] ~ ' - ' ~ dados["NOME"] ~ '" value="' ~ dados["ID"] ~ '" role-filial="' ~ dados["FILIAL"] ~ '">' ~ dados["ID"] ~ ' - ' ~ dados["NOME"] ~ '</option>'%}
+    {% endfor %}
+{% endif %}
+
+{% if checkError(setores) == false%}
+    {% for dados_setores in setores|cast_to_array %}
+        {% set dados_setores = dados_setores|cast_to_array %}
+        {% if dados_setores["FILIAL"] == "1" %}
+            {% set setores_origem = setores_origem ~ '<option value="' ~ dados_setores["ID"] ~ '">' ~ dados_setores["ID"] ~ ' - ' ~ dados_setores["NOME"] ~ '</option>'%}
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+{% set setores_json = [setores]|json_encode %}
+
+{% block title %} <title>{{titulo_app}}</title> {% endblock %}
+{% block estilos_adicionais %}
+	<link rel="stylesheet" href="{{baseTema}}/estoque_mov/transferencia.css?v={{ date().timestamp }}">
+{% endblock %}
+{% block main %}
+<div class="container"> <!-- Inicio Container -->
+
+<div class="margin-panel card"> <!-- Inicio Panel Principal -->
+	<div class="card-header">{{titulo_app}}</div>
+  <div class="card-body"> <!-- Inicio Panel Principal Body -->
+
+	      <div class="row firefox">
+	      	<form id="form_transferencia" class="form-group col col-md-12 form_transferencia"> <!-- Inicio Form -->
+				<div class="Inputar">		
+					<div class="row">
+						<div class="col-md-5 a rw empresa-div">
+							<label for="entidade_id">Empresa Destino</label>
+                            <select name="entidade_id" id="entidade_id" class="form-control entidade_id">
+                                {{filiais_var|raw}}
+                            </select>
+						</div>
+
+						<div class="col col-md-2 dt rw">
+							<label id="label_saida" for="data_transferencia">Data</label>
+							<div class="input-group mb-2 date" data-date-format="dd/mm/yyyy">
+								<input autocomplete="off" class="form-control data-pk data_transferencia" required id="data_transferencia" type="text">
+							</div>
+						</div>
+
+						<div class="col-md-3 s1 rw">
+							<label for="setor_origem">Setor de Origem</label>
+							<select class="form-control setor_origem no" id="setor_origem" name="setor_origem">
+                                {{setores_origem|raw}}
+							</select>
+						</div>
+
+						<div class="col-md-3 s1 rw">
+							<label for="setor_destino">Setor de Destino</label>
+							<select class="form-control setor_destino no" id="setor_destino" name="setor_destino">
+
+							</select>
+						</div>
+					</div>
+				</div>
+
+	      	<div class="row margin-top-1">
+	      		<div class="col col-md-12  rw">
+			        <table class="table table-bordered tabela_transferencia tabela_produtos_man">
+			         <thead>
+				         <tr>
+							 <th><i class="fa fa-trash"></i></th>
+					         <th>Item</th>
+					         <th>ID</th>
+					         <th>Produto</th>
+					         <th>CFOP</th>
+							 <th>Quantidade</th>
+							 <th><i class="fas fa-th"></i></th>
+							 <th>Grade</th>
+				         </tr>
+			         </thead>
+			         
+			         <tbody class="tbody_t1">
+			         </tbody>
+			        </table>
+	      		</div>
+	      	</div>
+
+	      	<div class="row float-left">
+				<div class="col-md-12" style="padding-left: 5px;">
+					<button class="btn btn-success" type="submit" name="salvar">Salvar <div class="icon"></div></button>
+					<button class="btn btn-warning" type="button" name="imprimir">Imprimir <div class="icon"></div></button>
+					<button class="btn btn-warning btn-limpar" type="button" name="limpar">Limpar <div class="icon"></div></button>
+					{% if doc_id != -1 %}
+						<button class="btn btn-warning" type="button" name="remover_pedido">Excluir<div class="icon"></div></button>
+					{% endif %}
+                    {{ voltar_tela_anterior | raw}}
+				</div>
+	      	</div>
+
+			{% if doc_id != -1 %}
+				<div class="row float-right">
+					<span style="transform: translateX(-10px);">Id: {{ doc_id }}</span>
+				</div>
+			{% endif %}
+
+	      	</form> <!-- Fim Form -->
+	      </div>
+	  	</div>
+		</div> 
+
+	 </div> <!-- Fim Painel Receber NF-e -->
+
+</div> <!-- Fim Container -->
+
+{% endblock %}
+
+{% block scripts_adicionais %}
+	<script>
+        {% if doc_id != -1 %}
+            {% if checkError(dados_transferencia) == false %}
+                var dados_transferencia = JSON.parse('{{dados_transferencia|json_encode|raw}}');
+            {%  else %}
+                $('body').html('')
+                mostrarMensagemErroSucessoAlerta('Nenhuma transferência encontrado com o id {{ doc_id }}', false, true, undefined, {NuncaFechar: true});
+            {% endif %}
+        {% endif %}
+        var setores = JSON.parse('{{setores_json|raw}}');
+        setores = setores[0];
+        var isFirefox = typeof InstallTrigger !== 'undefined',
+        width_div_table = $("."+$tabelas.tabela_transferencia).parent().width(),
+        width_table = isFirefox ? width_div_table : false;
+        var tb_transferencia = $("."+$tabelas.tabela_transferencia).TabelaMultipla({height_body: 170, width_div_table: width_div_table, width_table: width_table})
+        var tipo_uso = 1;
+        var empresa_origem = '{{nome_schema_atual}}';
+        empresa_origem = parseInt(empresa_origem.replace(/[^0-9\.]+/g,''));
+        var doc_id = undefined;
+		{% if doc_id != -1 %}
+			doc_id = '{{doc_id}}';
+		{% endif %}
+  	</script>
+	<script type="text/javascript" src="{{baseTema}}/estoque_mov/transferencia.js?v={{ date().timestamp }}"></script>
+{% endblock %}

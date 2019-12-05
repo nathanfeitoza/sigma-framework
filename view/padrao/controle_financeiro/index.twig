@@ -1,0 +1,166 @@
+{% extends "base.twig" %}
+
+{% set contas_correntes_op = montar_options(contas_correntes, [0], 'ID', ['AGENCIA','NUMERO_CONTA','NOME']) %}
+{% set centro_custo_op = montar_options(centro_custo, false, 'ID',['ID','DESCRICAO']) %}
+{% set plano_contas_op = montar_options(plano_contas, false, 'ID',['CODIGO','NOME']) %}
+
+{% block estilos_adicionais %}
+    <link rel="stylesheet" href="{{baseTema}}/controle_financeiro/controle_financeiro.css?v={{ date().timestamp }}">
+{% endblock %}
+
+{% block main %}
+    <div class="container"> <!-- Inicio Container -->
+        <div class="margin-panel card"> <!-- Inicio Panel Principal -->
+            <div class="card-header">{{titulo_app}}</div>
+            <div class="card-body"> <!-- Inicio Panel Principal Body -->
+                <form class="form-dados-cabecalho">
+                    <div class="row">
+
+                        <div class="col-2">
+                            <label for="data_historico">Data</label>
+                            <div class="input-group mb-2 date" data-date-format="dd/mm/yyyy">
+                                <input type="text" placeholder="Data" name="data_historico" id="data_historico" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="col-5">
+                            <label for="conta_corrente">Conta Corrente</label>
+                            <select id="conta_corrente" name="conta_corrente" class="form-control">
+                                {{ contas_correntes_op | raw }}
+                            </select>
+                        </div>
+
+                        <div class="col-5">
+                            <label for="plano_de_conta">Plano de Conta</label>
+                            <select id="plano_de_conta" name="plano_de_conta" class="form-control">
+                                {{ plano_contas_op | raw }}
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-5">
+                            <label for="historico_lancamento">Histórico do Lançamento</label>
+                            <input type="text" placeholder="Descrição do lançamento" id="historico_lancamento" name="historico_lancamento" class="form-control">
+                        </div>
+
+                        <div class="col-3">
+                            <label for="centro_de_custo">Centro de Custo</label>
+                            <select id="centro_de_custo" name="centro_de_custo" class="form-control">
+                                {{ centro_custo_op | raw }}
+                            </select>
+                        </div>
+
+                        <div class="col-2">
+                            <label for="documento">Documento</label>
+                            <input type="text" placeholder="Documento do lançamento" id="documento" name="documento" class="form-control">
+                        </div>
+
+                        <div class="col-2">
+                            <label for="valor">Valor</label>
+                            <input type="tel" placeholder="Valor do lançamento" id="valor" name="valor" class="form-control somente-numero money_qnt valor" data-option="{ponto: false, virgula: true, decs: 2, negativo: true, per_cent: true}">
+                        </div>
+
+                    </div><p></p>
+                </form>
+
+                <ul class="nav nav-tabs col-md-12" id="myTab" role="tablist">
+
+                    <div class="float-right saldo-anterior-div"><strong>Saldo anterior:</strong> R$ <saldo-anterior>0,00</saldo-anterior></div>
+
+                    <li class="nav-item">
+                        <a class="nav-link active" id="lancamentos-tab" data-toggle="tab" href="#lancamentos" role="tab" aria-controls="lancamentos" aria-selected="true">Lançamentos</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link disabled" id="creditos-tab" data-toggle="tab" href="#creditos" role="tab" aria-controls="creditos" aria-selected="true">Créditos</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link disabled" id="debitos-tab" data-toggle="tab" href="#debitos" role="tab" aria-controls="debitos" aria-selected="true">Débitos</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link disabled" id="resumo-dia-tab" data-toggle="tab" href="#resumo_dia" role="tab" aria-controls="resumo-dia" aria-selected="true">Resumo do dia</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link disabled" id="acumulado-tab" data-toggle="tab" href="#acumulado" role="tab" aria-controls="acumulado" aria-selected="true">Acumulado</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="lancamentos" role="tabpanel" aria-labelledby="lancamentos-tab">
+                        <div class="float-right">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="resumo-do-dia">
+                                <label class="custom-control-label" style="padding-top: 2px;" for="resumo-do-dia">Movimento do dia</label>
+                            </div>
+                        </div>
+                        <form class="lancamentos-forms" onsubmit="event.preventDefault()"></form>
+                        <div class="float-right"><strong>Saldo atual:</strong> R$ <saldo-atual>0,00</saldo-atual></div>
+                    </div>
+
+                    <div class="tab-pane fade" id="creditos" role="tabpanel" aria-labelledby="creditos-tab">
+                        <p></p>
+                        <div id="creditos-lanca"></div>
+                        <p></p>
+                        <div class="float-right"><strong>Total de Créditos:</strong> R$ <total-creditos>0,00</total-creditos></div>
+                    </div>
+
+                    <div class="tab-pane fade" id="debitos" role="tabpanel" aria-labelledby="debitos-tab">
+                        <p></p>
+                        <div id="debitos-lanca"></div>
+                        <p></p>
+                        <div class="float-right"><strong>Total de Débitos:</strong> R$ <total-debitos>0,00</total-debitos></div>
+                    </div>
+
+                    <div class="tab-pane fade" id="resumo_dia" role="tabpanel" aria-labelledby="resumo-dia-tab">
+                        <p></p>
+                        <div id="resumo-diario"></div><p></p>
+                        <div class="float-right"><strong>Saldo atual:</strong> R$ <saldo-atual-resumo>0,00</saldo-atual-resumo></div>
+                        <p></p>
+                    </div>
+
+                    <div class="tab-pane fade" id="acumulado" role="tabpanel" aria-labelledby="acumulado-tab">
+
+                    </div>
+                </div>
+
+                <div class="row" class="btns">
+                    <div class="col-md-12 div-botoes">
+                        <button class="btn btn-default">Travar Lançamentos</button>
+                        <button class="btn btn-default">Imprimir</button>
+                        {{ voltar_tela_anterior | raw}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts_adicionais %}
+    {% set plano_add = [] %}
+    {% for plano in plano_contas %}
+        {% set plano_add = plano_add|merge([[plano.ID,plano.TIPO]]) %}
+    {% endfor %}
+
+    <script>
+        var plano_contas = JSON.parse('{{ plano_add|json_encode|raw }}');
+        var plano_contas_usar = [];
+
+        for(var i in plano_contas) {
+            var plano = plano_contas[i];
+            plano_contas_usar[plano[0]] = plano[1];
+        }
+
+        var saldo_atual = '{{ saldo_atual }}';
+        var saldo_anterior = '{{ saldo_anterior }}';
+
+        var mov_conta = JSON.parse('{{ movimentacao_atual | json_encode | raw }}');
+
+    </script>
+    <script src="{{baseTema}}/controle_financeiro/controle_financeiro.js?v={{ date().timestamp }}"></script>
+{% endblock %}

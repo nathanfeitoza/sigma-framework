@@ -1,0 +1,24 @@
+{% extends "base.twig" %}
+
+{% block estilos_adicionais %}
+
+{% endblock %}
+
+{% block main %}
+    <div class="container"> <!-- Inicio Container -->
+        <div class="margin-panel card"> <!-- Inicio Panel Principal -->
+            <div class="card-header">{{titulo_app}}</div>
+            <div class="card-body"> <!-- Inicio Panel Principal Body -->
+                <form class="form-dados-cabecalho">
+                    <input type="text" class="form-control produto_id_modal">
+                </form>
+
+                <div class="div-tabela-estoque-mov"></div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts_adicionais %}
+{% endblock %}

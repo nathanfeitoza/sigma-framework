@@ -1,0 +1,90 @@
+{% extends "base.twig" %}
+
+{% block estilos_adicionais %}
+	<link rel="stylesheet" href="{{baseTema}}/controle_financeiro/mensalidades.css?v={{ date().timestamp }}">
+{% endblock %}
+
+{% block main %} 
+	<div class="container">
+			<div class="card">
+				<div class="card-header">{{titulo_app}}</div>
+				<div class="card-body">
+					<div class="row">
+						<div class="col col-md-12">
+							<form class="dados_filtros">
+								<div class="row">
+								    <div class="col-md-6 input-group inputs_filtros">
+										<div class="col-md-4">
+											<select name="conta_usar" class="select-bancos" id="banco" >
+
+		                                		<option value="0" disabled>Selecione sua conta</option>
+		                                		
+		                                		{% for item in conta_corrente|cast_to_array %}
+		                                			{% set item = item|cast_to_array %}
+		                                			{% set banco_info = item["AGENCIA"] ~ "/" ~ item["NUMERO_CONTA"] %}
+
+		                                			<option data-img-src="{{baseTema}}/{{item["IMG_BANCO"]}}" value="{{item["ID"]}}">{{banco_info}}</option>
+		                                		{% endfor %}
+			                            	</select> 
+										</div>
+									
+										<div class="col-md-4">
+											<select name="tipo_consultar" class="select-filtro form-control">
+		                                		<option value="1" role-option-select="Emissão">Emissão</option>
+		                                		<option value="2" role-option-select="Vencimento">Vencimento</option> 
+			                            	</select>
+										</div>
+										<div class="col-md-4">
+											<div class="input-group">
+												<input type="text" class="form-control data_consultar" role-name="data_consultar">
+											</div>
+										</div>
+									</div>
+									<div class="col-md-6 botoes_filtros">
+										<button type="submit" class="btn btn-default">Consultar</button>
+										<button type="button" class="btn btn-default btn_gerar">Gerar Mensalidades</button>
+										<button type="button" class="btn btn-default btn_gerar" role-id="2">Gerar Boleto</button>
+										<button type="button" class="btn btn-default btn_acao" role-id="1">Imprimir</button>
+										<button type="button" class="btn btn-default btn_acao" role-id="2">Email</button>
+									</div>									
+									<div class="col-md-12 dados_selecao">
+										<consultados>0 Mensalidade</consultados>
+										<selecionados>0 Selecionado</selecionados>
+									</div>
+								</div>
+							</form>
+
+							<div class="row">
+								<div class="col-md-12">
+						            <table class="table table-striped tabela_boletos" id="tabela_boletos">
+						                <thead>
+						                    <tr>
+	
+						                        <th class="tg-031e col-xs-1"><div class="custom-control custom-checkbox" style="min-height: 20px;transform: translateY(-1px);"><input type="checkbox" id="selecionar-todos" class="custom-control-input selecionar-todos"> <label class="custom-control-label color" for="selecionar-todos" style="margin-left: 35%;"></label></div></th>
+
+						                        <th class="tg-yw4l col-xs-2">Documento</th>
+						                        <th class="tg-yw4l col-xs-4">Nome da entidade</th>
+						                        <th class="tg-yw4l col-xs-2">Emissão</th>
+						                        <th class="tg-yw4l col-xs-2">Vencimento</th>
+						                        <th class="tg-yw4l col-xs-1">Valor</th>
+						                        <th class="tg-yw4l col-xs-1">Rem</th>
+						                    </tr>
+						                </thead>
+						                <tbody>
+						                </tbody>
+						            </table>
+					        	</div>
+				        	</div>
+
+                            {{ ('<p></p>' ~ voltar_tela_anterior) | raw}}
+						</div>
+
+					</div>
+				</div>
+			</div>
+	</div>
+{% endblock %}
+
+{% block scripts_adicionais %}
+	<script type="text/javascript" src="{{baseTema}}/controle_financeiro/mensalidades.js?v={{ date().timestamp }}"></script>
+{% endblock %}
