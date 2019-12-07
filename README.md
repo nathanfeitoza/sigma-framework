@@ -9,9 +9,7 @@ A estrutura segue os padrões MVC, portanto, as pastas correspondente ao padrão
 
 * app
     * containers -> Arquivos que compõe os [containers do Slim](http://bit.ly/2UikTGY)
-    * middleware -> Arquivos que fazem uma ponte para execução de determinadas ações, diferem do eventos, pois não necessitam de um controller para funcionar e serão incluídos diretamente no código (require_once) através de um metódo que possibilite tal. Só serão utilizados de maneira global, para interações dentro das rotas usar eventos
-        * antes_da_validacao -> Os arquivos contidos aqui serão inseridos após o recebimento e preenchimento de objetos globais do controller, ou seja, antes de se iniciar as validações da requisição em si
-        * depois_da_validacao -> Os arquivos contidos aqui serão responsáveis por executar após as validações da requisição em termos de rota, portanto, depois da execução da validação inicial. Os arquivos contidos aqui serão, por exemplo, utilizados para validação de tokens
+    * middleware -> Arquivos que fazem uma ponte para execução de determinadas ações, diferem do eventos, pois não necessitam de um controller para funcionar e serão incluídos diretamente no código (require_once) através de um metódo que possibilite tal. Só serão utilizados de maneira global, para interações dentro das rotas.
     * controller -> Controller das aplicações (MVC)
         * api -> Classes de controller que precisam de autenticação que servem de endpoint da api
         * ui -> Classes de controller que não precisam de autenticação, pois a mesma será feita no login, e server para renderizar as páginas do twig e servir informações as mesmas
@@ -32,7 +30,7 @@ A estrutura segue os padrões MVC, portanto, as pastas correspondente ao padrão
             OBS: Há duas classes Controller e Model que devem ser extendidas as classes Controller e Model do MVC, respectivamente. Há também a classe Genericos que é uma classe estática que abriga métodos também estáticos para validações e busca de configurações, por exemplo.
             A classe Start é quem inicia a aplicação
         
-    * events -> Pasta que guarda as informações dos eventos que a aplicação tem, podendo especificar qual tigger (gatilho) e action (ação) do mesmo
+    * events -> Pasta que guarda as informações dos eventos que a aplicação tem, podendo especificar qual trigger (gatilho) e action (ação) do mesmo
     * externo -> São onde ficam os códigos gerenciados pelo composer e outros externos que não sejam gerenciados por ele
         * composer -> diretório dos códigos obtidos com o composer
         * notcomposer -> diretório com códigos de terceiros que não vieram do composer
@@ -46,13 +44,17 @@ A estrutura segue os padrões MVC, portanto, as pastas correspondente ao padrão
     * .htaccess -> Arquivo apache para configurá-lo, ex: restringir acesso a pastas, arquivos
     * composer.json -> arquivo que gerencia as dependências do composer
 
-* arquivos -> Pasta onde são armazenados os arquivos gerados e recebidos da aplicação
-* certificados -> pasta que guarda os certificados digitais
-* defines -> Pasta onde são definidas configurações da aplicação e endereço do banco de dados
-* logs -> pasta onde são guardados os logs da aplicação
-* scripts -> Pasta onde são guardados os scripts a serem executados em linha de comando
+    * storage -> Pasta onde são armazenados os arquivos gerados e recebidos da aplicação.
+        * logs -> pasta onde são guardados os logs da aplicação
+
+    * scripts -> Pasta onde são guardados os scripts a serem executados em linha de comando
+
+    * defines -> Local em que ficam os defines globais da aplicação e que podem ser sobescritos por outro define na raíz da aplicação.
+
+* defines -> Pasta onde são definidas configurações da aplicação e endereço do banco de dados. Este local sobrescreve os dados da defines em /app
+
 * view -> Pasta View onde a parte de ui é renderizada (MVC)
-    OBS: Aqui a pasta do tema definido nas configurações, e dentro dela há a arquitetura frontend com o twig
+    OBS: Aqui está pasta do tema definido nas configurações, e dentro dela há a arquitetura frontend com o twig
     
 
 # Definições Técnicas
@@ -61,7 +63,9 @@ PS: Toda classe deverá usar camelcase com a primeira letra maiúscula. Ex: Minh
 
 ### Controller
 Toda classe Controller deverá ficar dentro da pasta app/controller e de sua respectiva finalidade, ui ou api, para interface do usuário ou api, respectivamente e de sua pasta grupo.
-Deverá começar com o prefixo Controller e também extender a classe Controller. Exemplo de código:
+Deverá começar com o prefixo Controller e também extender a classe Controller ou, caso seja api com validação, a classe ControllerApi*. Exemplo de código:
+
+<sub>** a classe Controller api é uma extensão de Controller com definições gerais para APIs como, por exemplo, autenticação OUATH, JWT e etc.</sub>
 
 ```php
     <?php
@@ -73,6 +77,20 @@ Deverá começar com o prefixo Controller e também extender a classe Controller
     use AppCore\Controller;
     
     class ControllerIndex extends Controller
+    {}
+```
+
+Para API
+```php
+    <?php
+    /*
+     * AppController é o namespace que identifica que esta classe é um controller para o composer. Ver app/composer.json
+     * */
+    namespace AppController\api\boleto;
+    
+    use AppCore\Controller;
+    
+    class ControllerIndex extends ControllerApi
     {}
 ```
 
