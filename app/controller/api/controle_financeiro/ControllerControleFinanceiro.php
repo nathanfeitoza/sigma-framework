@@ -42,7 +42,7 @@ class ControllerControleFinanceiro extends Controller
         $tipo = isset($params[1]) ? $params[1] : 'atual';
         $tipo = strtolower($tipo);
 
-        if($tipo == 'atual') {
+        if ($tipo == 'atual') {
             $retornar = $this->model()->getSaldoAtual($data, $conta_corrente);
         } else {
             $retornar = $this->model()->getSaldoAnterior($data, $conta_corrente);
@@ -88,7 +88,7 @@ class ControllerControleFinanceiro extends Controller
         $status = true;
         $cod = 200;
 
-        if(is_bool($retornar['DADOS'])) {
+        if (is_bool($retornar['DADOS'])) {
             $this->setCodHttp(404);
             $retornar['DADOS'] = $msg_nao_encontrado;
             $status = false;

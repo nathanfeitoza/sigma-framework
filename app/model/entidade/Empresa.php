@@ -66,7 +66,7 @@ class Empresa extends Entidade
      */
     protected function getContaCorrentePadronizada($contas)
     {
-        if(isset($contas[0]->BANCO)) {
+        if (isset($contas[0]->BANCO)) {
 
             foreach ($contas as $chave => $item) {
                 $pasta_imgs_bancos = 'img/boletos/bancos/';
@@ -105,7 +105,7 @@ class Empresa extends Entidade
     {
         $contas = $this->db()->tabela('view_conta_corrente')->buildQuery('select');
 
-        if(is_int($contas) || is_bool($contas)) return false;
+        if (is_int($contas) || is_bool($contas)) return false;
 
         return $this->getContaCorrentePadronizada($contas);
     }
@@ -128,7 +128,7 @@ class Empresa extends Entidade
             ->where('id','=',$conta_id)
             ->buildQuery('select');
 
-        if(is_int($conta) || is_bool($conta)) {
+        if (is_int($conta) || is_bool($conta)) {
             return false;
         }
 
@@ -226,7 +226,7 @@ class Empresa extends Entidade
             ->tabela('view_filiais_setores')
             ->where('filial', '=', $filial);
 
-        if($setor != false)  {
+        if ($setor != false)  {
             $buscar->whereAnd('setor','=',$setor);
         }
 

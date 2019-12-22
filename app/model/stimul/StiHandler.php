@@ -175,7 +175,7 @@ class StiHandler extends Stimul
             $auth_smtp = false;
             $cript_smtp = false;
             $host = $configs_smtp->HOST;
-            if(strpos($configs_smtp->HOST, '://') != false) {
+            if (strpos($configs_smtp->HOST, '://') != false) {
                 $cript_smtp = explode('://', $configs_smtp->HOST);
                 $host = $cript_smtp[1];
                 $cript_smtp = $cript_smtp[0];
@@ -276,7 +276,7 @@ class StiHandler extends Stimul
                     $filtro_parametros = array_filter(
                         $array_parametros,
                         function ($key) use ($array_chave_parametros) { // N.b. $val, $key not $key, $val
-                            if(isset($array_chave_parametros[$key])) {
+                            if (isset($array_chave_parametros[$key])) {
                                 return $array_chave_parametros[$key];
                             }
                         },

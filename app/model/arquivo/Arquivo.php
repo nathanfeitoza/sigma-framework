@@ -34,7 +34,7 @@ class Arquivo extends Model
         $arquivo = str_replace(' ','+',$arquivo);
         $arquivo = Genericos::encriptarDecriptar('decrypt', $arquivo, Genericos::getChaveCriptografiaZip());
 
-        if(!file_exists($arquivo)) throw new AppException("Arquivo não encontrado",404);
+        if (!file_exists($arquivo)) throw new AppException("Arquivo não encontrado",404);
 
         return $arquivo;
     }

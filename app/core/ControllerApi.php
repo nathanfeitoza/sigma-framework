@@ -26,7 +26,7 @@ abstract class ControllerApi extends Controller
         
         $retornar = [];
         
-        if(!$this->desativarAuth) $retornar[] = $authApi;
+        if (!$this->desativarAuth) $retornar[] = $authApi;
 
         return $retornar;
     }
@@ -35,7 +35,7 @@ abstract class ControllerApi extends Controller
     {
         $this->setMethodsAceitos('POST');
 
-        if($this->ativarRequestToken) {
+        if ($this->ativarRequestToken) {
             $authApi = $this->getAuthApi();
             $authApi->setRequest($this->getRequest())
             ->setResponse($this->getResponse());

@@ -54,7 +54,7 @@ class RenderView
         $pagina .= '.twig';
         $paginaLoad = $tema.'/'.$pagina;
 
-        if(!file_exists($paginaLoad)) {
+        if (!file_exists($paginaLoad)) {
             echo $tema;
             throw new AppException('Pagina '.$pagina.' não encontrada no tema', 1004, 404);
         }

@@ -30,9 +30,11 @@ abstract class Model
     private function initBD()
     {
         $bancoConfig = Configuracoes::get('BANCO_DADOS');
-        $opcoes = $bancoConfig['OPCOES'];
+        $opcoes = isset($bancoConfig['OPCOES']) 
+            ? $bancoConfig['OPCOES']
+            : [];
 
-        if(isset($opcoes['dir_log'])) $opcoes['dir_log'] = Configuracoes::get('ROOTDIR').$opcoes['dir_log'];    
+        if (isset($opcoes['dir_log'])) $opcoes['dir_log'] = Configuracoes::get('ROOTDIR').$opcoes['dir_log'];    
     
         $this->db = BD::init(
             $bancoConfig ['TYPE'], 
@@ -74,7 +76,7 @@ abstract class Model
 
     public function getAliasTabela($alias='')
     {
-        if($this->alias == false) {
+        if ($this->alias == false) {
             return $alias;
         }
 
@@ -207,11 +209,11 @@ abstract class Model
 
     public function setPaginacao($dados_paginacao)
     {
-        if(Genericos::verificarCampoPreenchido($dados_paginacao, 'pagina')) {
+        if (Genericos::verificarCampoPreenchido($dados_paginacao, 'pagina')) {
             $this->setPagina($dados_paginacao['pagina']);
         }
 
-        if(Genericos::verificarCampoPreenchido($dados_paginacao, 'max_por_pag')) {
+        if (Genericos::verificarCampoPreenchido($dados_paginacao, 'max_por_pag')) {
             $this->setMaxPorPag($dados_paginacao['max_por_pag']);
         }
 
@@ -243,7 +245,7 @@ abstract class Model
         $busca_pre = $this->db()->tabela($tabela_view)
             ->campos(['count(*) as total_regs']);
 
-        if(is_callable($where)) $where($busca_pre);
+        if (is_callable($where)) $where($busca_pre);
         
         $busca_pre = $busca_pre->orderBy(false, false)->buildQuery('select');
 
@@ -257,7 +259,7 @@ abstract class Model
         $offset = $start * $max_por_pagina;
         $max_pag = ceil($qntd_retornada/$max_por_pagina);
 
-        if(!$listar_todos) {
+        if (!$listar_todos) {
             $usar_limite = $max_por_pagina;
             $usar_offset = $offset;
         }
@@ -268,8 +270,8 @@ abstract class Model
 
         $obj_query_builder->tabela($tabela_view);
 
-        if(is_callable($where)) $where($obj_query_builder);
-        if(is_callable($callback)) $callback($obj_query_builder);
+        if (is_callable($where)) $where($obj_query_builder);
+        if (is_callable($callback)) $callback($obj_query_builder);
 
         $retornoPersonalizado = [
             "registros_totais" => $qntd_retornada,
@@ -280,7 +282,7 @@ abstract class Model
         
         $orderBy = $obj_query_builder->getOrderBy();
 
-        if(!$orderBy) {
+        if (!$orderBy) {
             $retornoPersonalizado['ordem'] = [
                 'campo' => $this->getChavePrimariaTabela($tabela_view),
                 'tipo' => 'ASC'
@@ -295,7 +297,7 @@ abstract class Model
             ];
         }
 
-        if(!$listar_todos) {
+        if (!$listar_todos) {
             $obj_query_builder->setRetornoPersonalizado($retornoPersonalizado);
         }
 
@@ -308,7 +310,7 @@ abstract class Model
     {
         $schema = empty($schema) ? 'public.' : $schema.'.';
 
-        if(strpos($tabela, '.') != false) $schema = '';
+        if (strpos($tabela, '.') != false) $schema = '';
 
         $primaria = $this->db()->executarSQL('SELECT A.attname as primaria
                             FROM
@@ -337,7 +339,7 @@ abstract class Model
                 ->setGerarLog(true)
                 ->buildQuery('select');
 
-        if(is_bool($campos)) return [];
+        if (is_bool($campos)) return [];
 
         return array_map(function($valor) {
             return $valor->campo_tabela;
@@ -348,10 +350,10 @@ abstract class Model
     {
         $obj_bd = $this->db()->tabela($tabela);
 
-        if($valores != false) $obj_bd->campos($campos, $valores);
+        if ($valores != false) $obj_bd->campos($campos, $valores);
 
-        if(is_callable($where)) {
-            if($tipo == 'select') {
+        if (is_callable($where)) {
+            if ($tipo == 'select') {
                 $chave_primaria = $this->getChavePrimariaTabela($tabela);
                 $obj_bd->orderBy($chave_primaria, 'ASC');
             }
@@ -361,14 +363,14 @@ abstract class Model
 
         $executar = $obj_bd->buildQuery($tipo);
 
-        if($tipo == 'select') return $executar;
+        if ($tipo == 'select') return $executar;
 
         return $this->db();
     }
 
     protected final function filtrarCamposCrud(Array $filtrar, Array $campos_input, $usar_keys = true)
     {
-        if($filtrar[0] == '*') return $filtrar;
+        if ($filtrar[0] == '*') return $filtrar;
 
         return array_filter($campos_input, function($valor) use ($filtrar) {
             return in_array($valor, $filtrar);
@@ -377,11 +379,11 @@ abstract class Model
 
     protected final function whereOfQuery($query, BD $objBd)
     {
-        if(!is_array($query)) return;
+        if (!is_array($query)) return;
         
         $verificar = Genericos::verificarCampoPreenchido($query, 'query', false);
 
-        if(!$verificar) return;
+        if (!$verificar) return;
         
         $contador = -1;
         $quantidadeCampos = count($query['query']);
@@ -389,26 +391,26 @@ abstract class Model
         foreach($query['query'] as $indexQuery => $dadosQuery) {
             $contador++;
 
-            if(strtolower($indexQuery) == 'ordem' && is_array($dadosQuery)) {
+            if (strtolower($indexQuery) == 'ordem' && is_array($dadosQuery)) {
                 $campo = array_keys($dadosQuery)[0];
                 $tipoOrdem = @strtoupper($dadosQuery[$campo]);
                 $aceitos = ['ASC','DESC'];
 
-                if(in_array($tipoOrdem, $aceitos)) $objBd->orderBy($campo, $tipoOrdem);
+                if (in_array($tipoOrdem, $aceitos)) $objBd->orderBy($campo, $tipoOrdem);
 
                 continue;
             }
 
             $verificarCorreto = Genericos::camposVazios($dadosQuery, ['comparador','valor'], false);
             
-            if(is_string($verificarCorreto)) continue;
+            if (is_string($verificarCorreto)) continue;
             
             $valor = $dadosQuery['valor'];
 
             $usarLogico = Genericos::verificarCampoPreenchido($dadosQuery, 'logico', false);
             $logico = 'AND';
 
-            if($usarLogico != false) $logico = strtolower($dadosQuery['logico']) == 'o' ? 'OR' : $logico;
+            if ($usarLogico != false) $logico = strtolower($dadosQuery['logico']) == 'o' ? 'OR' : $logico;
             
             switch(strtolower($dadosQuery['comparador'])) {
                 case 'i':
@@ -441,12 +443,12 @@ abstract class Model
                     $comparador = '=';
             }
 
-            if($contador == 0) {
+            if ($contador == 0) {
                 $objBd->where($indexQuery, $comparador, $valor);
                 continue;
             }
 
-            if($logico == 'OR') {
+            if ($logico == 'OR') {
                 $objBd->whereOr($indexQuery, $comparador, $valor);
                 continue;
             }
@@ -481,7 +483,7 @@ abstract class Model
     {
         $validar = preg_grep('/(inserir|atualizar|deletar|listar)_bd/i', [$call]);
 
-        if(count($validar) > 0) {
+        if (count($validar) > 0) {
             $usa_schema = preg_grep('/(inserir|atualizar|deletar|listar)_bd+\d/i', [$call]);
             $usa_schema = count($usa_schema) > 0;
             $schema = $usa_schema ? Genericos::getSchema() : '';
@@ -498,7 +500,7 @@ abstract class Model
             $tabela = preg_replace('/(inserir|atualizar|deletar|listar)_bd+\d?_/i', '', $call);
             $tabela = strtolower($schema.$tabela);
 
-            if(count($arguments) < 1 and ($is_inserir OR $is_atualizar) ) {
+            if (count($arguments) < 1 and ($is_inserir OR $is_atualizar) ) {
                 throw new AppException('Não informado os campos e/ou valores 
                                         para inserir na tabela '
                                         .$tabela, 1036, 500, 'Erro interno');
@@ -506,7 +508,7 @@ abstract class Model
             
             $where = isset($arguments[0]) ? $arguments[0] : false;
 
-            if(!is_callable($where)) {
+            if (!is_callable($where)) {
                 $campos = isset($arguments[0]) ? array_keys($arguments[0]) : false;
                 $valores = isset($arguments[0]) ? array_values($arguments[0]) : false;
                 
@@ -516,21 +518,21 @@ abstract class Model
                 $where = false;
             }
 
-            if(!$is_inserir and isset($arguments[1])) {
+            if (!$is_inserir and isset($arguments[1])) {
                 $where = is_callable($arguments[1]) ? $arguments[1] : false;
             }
 
-            if($is_inserir) {
+            if ($is_inserir) {
                 return $this->inserirTabela($tabela, $campos, $valores);
             } 
             
-            if($is_atualizar) {
+            if ($is_atualizar) {
                 return $this->atualizarTabela($tabela, $campos, $valores, $where);
             }
 
-            if($is_listar) {
+            if ($is_listar) {
                 
-                if(!($this->getCamposRetornar() == ['*'])) {
+                if (!($this->getCamposRetornar() == ['*'])) {
                     $camposTabela = $this->getCamposTabela($tabela, $schema);
                     $campos_retornar = $this->filtrarCamposCrud(
                                         $camposTabela, 

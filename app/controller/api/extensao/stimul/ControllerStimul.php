@@ -27,7 +27,7 @@ class ControllerStimul extends Controller
 
         $getDados = $this->getParamSend('dados');
 
-        if($getDados == false) {
+        if ($getDados == false) {
             $dados = file_get_contents('php://input');
             Genericos::jsonDecode($dados,'Requisição não válida para o stimul');
             $getDados = $dados;
@@ -89,19 +89,19 @@ class ControllerStimul extends Controller
 
         $gerar = 'gerarJsonRelatorio'.$tipo;
 
-        if(!method_exists($model, $gerar)) {
+        if (!method_exists($model, $gerar)) {
             throw new AppException('A geração de relatório para '.$tipo.' não foi encontrada', 404, 404);
         }
 
         $reflection = new \ReflectionMethod($model, $gerar);
 
-        if(!$reflection->isPublic()) {
+        if (!$reflection->isPublic()) {
             throw new AppException('A geração de relatório para '.$tipo.' não foi encontrada',1006, 403);
         }
 
         $paramsMethod = $reflection->getParameters();
 
-        if(count($paramsMethod) != 0 and count($argumentos) == 0) {
+        if (count($paramsMethod) != 0 and count($argumentos) == 0) {
             throw new AppException('O tipo '.$tipo.' de relatório necessita de argumentos', 10615,401);
         }
 

@@ -14,8 +14,13 @@ abstract class Controller
 {
     use ControllerModelTrait;
 
-    protected $request, $response, $args = [], $params = [], $container;
-    protected $codHttp = 200, $output = '';
+    protected $request;
+    protected $response;
+    protected $args = [];
+    protected $params = [];
+    protected $container;
+    protected $codHttp = 200;
+    protected $output = '';
     protected $tipoAcessoApi = false;
     private $acessoExterno = true;
 
@@ -35,8 +40,12 @@ abstract class Controller
         return $this;
     }
 
-    protected function setOutputJson($valor, $padraoApi=true, $status=true, $codReturn=200)
-    {
+    protected function setOutputJson(
+        $valor, 
+        $padraoApi = true, 
+        $status = true, 
+        $codReturn = 200
+    ) {
         $normalValor = $valor;
         $valor = is_array($valor) ? $valor : [$valor];
         $response = $this->getResponse();
@@ -48,14 +57,14 @@ abstract class Controller
 
     protected function setOutput($valor)
     {
-        if(is_object($valor)) {
+        if (is_object($valor)) {
             return $this->output = $valor;
         }
 
         $response = $this->getResponse();
         $response = $response->withStatus($this->codHttp);
         $body = $response->getBody()->__toString();
-        if(!empty($body)) $valor = $body.$valor;
+        if (!empty($body)) $valor = $body.$valor;
 
         $stream = Genericos::setStream($valor);
         $this->output = $response->withBody($stream);
@@ -79,7 +88,7 @@ abstract class Controller
         parse_str($input, $post_vars);
         $postParams = $post_vars;
 
-        if(!is_null($request)) {
+        if (!is_null($request)) {
             $queryParams = $request->getQueryParams();
             $postParams = is_array($request->getParsedBody()) ? (array) $request->getParsedBody() : [];
         }
@@ -87,18 +96,21 @@ abstract class Controller
         return array_merge($queryParams,$postParams);
     }
 
-    public function getParamSend($param, $exception=false,$msgNaoEncontrado='')
-    {
+    public function getParamSend(
+        $param, 
+        $exception = false,
+        $msgNaoEncontrado = ''
+    ) {
         $get = $this->getAllParams();
         $validarP = is_array($param) ? $param : [$param];
         $validar = Genericos::camposVazios($get, $validarP);
 
-        if($validar != 1) {
-            if($exception) throw new AppException('Erro ao executar. '.$validar, 1035,401, $msgNaoEncontrado);
+        if ($validar != 1) {
+            if ($exception) throw new AppException('Erro ao executar. '.$validar, 1035,401, $msgNaoEncontrado);
             return $exception;
         }
 
-        if(count($get) == 1) return [$param => $get[$param]];
+        if (count($get) == 1) return [$param => $get[$param]];
 
         $buscar = function($arr) use ($validarP) {
             return in_array($arr, $validarP);
@@ -197,6 +209,7 @@ abstract class Controller
     {
         $pagina = $this->getParamSend('pagina',false);
         $pagina = !$pagina ? 1 : $pagina['pagina'];
+
         return $pagina;
     }
 
@@ -204,6 +217,7 @@ abstract class Controller
     {
         $max = $this->getParamSend('max_por_pagina',false);
         $max = !$max ? 30 : $max['max_por_pagina'];
+
         return $max;
     }
 
@@ -212,13 +226,17 @@ abstract class Controller
         $methods = is_array($methods) ? $methods : [$methods];
         $metodoAcesso = $this->getRequest()->getMethod();
 
-        if($metodoAcesso == 'OPTIONS') {
+        if ($metodoAcesso == 'OPTIONS') {
             $this->setOutput(true);
             return true;
         }
 
-        if(!in_array($metodoAcesso, $methods)) {
-            throw new AppException('Não é possível acessar esta rota usando o método: '.$metodoAcesso, 1012, 403);
+        if (!in_array($metodoAcesso, $methods)) {
+            throw new AppException(
+                'Não é possível acessar esta rota usando o método: ' . $metodoAcesso, 
+                1012, 
+                403
+            );
         }
     }
 
@@ -231,14 +249,21 @@ abstract class Controller
      * @param integer $cod_erro
      * @return void
      */
-    public function getCamposListarCrud($campos_input, $nao_listar, $mensagem = 'Nada encontrado', $cod_erro = 404)
-    {
-        $campos_listar = array_filter($campos_input, function($valor) use ($nao_listar) {
-            return !in_array($valor, $nao_listar);
-        });
+    public function getCamposListarCrud(
+        $campos_input, 
+        $nao_listar, 
+        $mensagem = 'Nada encontrado', 
+        $cod_erro = 404
+    ) {
+        $campos_listar = array_filter(
+            $campos_input, 
+            function($valor) use ($nao_listar) {
+                return !in_array($valor, $nao_listar);
+            }
+        );
 
-        if(count($campos_listar) == 0) {
-            if(is_bool($mensagem)) return false;
+        if (count($campos_listar) == 0) {
+            if (is_bool($mensagem)) return false;
 
             throw new AppException($mensagem, $cod_erro, $cod_erro);
         }
@@ -249,7 +274,6 @@ abstract class Controller
     public function index()
     {
         throw new AppException('Nada encontrado', 1044, 404);
-        //$this->setOutputJson('',true);
     }
 
     public function getAcessoExterno()

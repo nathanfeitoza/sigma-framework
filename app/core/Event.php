@@ -34,8 +34,12 @@ class Event
      * @return string
      * @autor Nathan Feitoza
      */
-    protected function stringJsonEvent($codigo, $trigger, $acao, $method)
-    {
+    protected function stringJsonEvent(
+        $codigo, 
+        $trigger, 
+        $acao, 
+        $method
+    ) {
         return json_encode( [
             'codigo' => $codigo,
             'trigger' => $trigger,
@@ -48,25 +52,38 @@ class Event
     {
         $event = $this->pastaEvents.$trigger.'.event';
 
-        if(file_exists($event)) {
+        if (file_exists($event)) {
             $dadosEvent = file_get_contents($event);
-            $dadosEvent = Genericos::jsonDecode($dadosEvent, 'O evento '.$trigger.' informado não contém um arquivo de evento válido');
+            $dadosEvent = Genericos::jsonDecode(
+                $dadosEvent, 
+                'O evento '.$trigger.' informado não contém um arquivo de evento válido'
+            );
+
             return $dadosEvent;
         }
 
         return false;
     }
 
-    public function addEvent($codigo, $trigger, $acao)
-    {
+    public function addEvent(
+        $codigo, 
+        $trigger, 
+        $acao
+    ) {
+
         if (php_sapi_name() == "cli") return;
 
-        if(!$this->getEvent($codigo.'.'.$trigger)) {
+        if (!$this->getEvent($codigo.'.'.$trigger)) {
             $namespace = 'AppController\\';
 
             $acaoAnalyse = explode('/',$acao);
 
-            if(count($acaoAnalyse) <= 2) throw new AppException('Acão '.$acao.' do evento '.$codigo.' passada não é válida', 1032);
+            if (count($acaoAnalyse) <= 2) {
+                 throw new AppException(
+                     'Acão '.$acao.' do evento '.$codigo.' passada não é válida', 
+                     1032
+                );
+            }
 
             $namespace2 = $acaoAnalyse[1];
 
@@ -76,13 +93,35 @@ class Event
             $metodo = isset($acaoAnalyse[3]) ? $acaoAnalyse[3] : 'index';
             $metodo = Genericos::convertClassMethod($metodo, 2);
 
-            $classe = $namespace.$acaoAnalyse[0].'\\'.$namespace2.'\\'.Configuracoes::get('CONTROLLER').$classe;
+            $classe = $namespace . $acaoAnalyse[0]
+                .'\\' . $namespace2 . '\\'
+                . Configuracoes::get('CONTROLLER') . $classe;
 
-            if(!class_exists($classe)) throw new AppException('O controller da ação '.$acao.' para o evento '.$codigo.' não é válida, pois não existe', 1033);
-            if(!method_exists(new $classe, $metodo)) throw new AppException('O método '.$metodo.' do evento '.$codigo.' não existe', 1034);
+            if (!class_exists($classe)) {
+                throw new AppException(
+                    'O controller da ação ' 
+                    . $acao . ' para o evento ' 
+                    . $codigo . ' não é válida, pois não existe', 
+                    1033
+                );
+            }
+            
+            if (!method_exists(new $classe, $metodo)) {
+                 throw new AppException(
+                    'O método '
+                    . $metodo
+                    . ' do evento ' . $codigo . ' não existe', 
+                    1034
+                );
+            }
 
             $eventName = $this->pastaEvents.$codigo.'.'.$trigger.'.event';
-            $eventSave = $this->stringJsonEvent($codigo, $trigger, $classe, $metodo);
+            $eventSave = $this->stringJsonEvent(
+                $codigo, 
+                $trigger, 
+                $classe, 
+                $metodo
+            ); 
 
             return file_put_contents($eventName, $eventSave);
         }
@@ -93,9 +132,9 @@ class Event
         $evento = $this->getEvent($trigger);
         $arguments = is_array($arguments) ? $arguments : [$arguments];
 
-        if($evento != false) {
+        if ($evento != false) {
             $classe = $evento->acao;
-            $classe = str_replace('/','\\',$classe);
+            $classe = str_replace('/', '\\', $classe);
             $metodo = $evento->method;
 
             try {

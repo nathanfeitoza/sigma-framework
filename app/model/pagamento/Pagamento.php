@@ -31,7 +31,7 @@ class Pagamento extends Model
             ->orderBy('id','ASC')
             ->buildQUery('select');
 
-        if($add_contas_correntes) {
+        if ($add_contas_correntes) {
             $this->loadModel('entidade/empresa');
             $contas_correntes = $this->model_entidade_empresa
                 ->setCamposRetornar(['id','numero_conta','nome'])

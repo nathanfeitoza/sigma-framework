@@ -57,14 +57,14 @@ class CaixaOperador extends Model
 
     public function updateValorCaixa($id_caixa, $novo_valor, $forma_pagto_id)
     {
-        if(!$this->getCaixa($id_caixa)) throw new AppException('Este caixa não existe', 18158);
+        if (!$this->getCaixa($id_caixa)) throw new AppException('Este caixa não existe', 18158);
 
         $transacao = $this->db();
 
         $transacao->iniciarTransacao();
 
         foreach ($novo_valor as $i => $valor_salvar) {
-            if(isset($forma_pagto_id[$i])) {
+            if (isset($forma_pagto_id[$i])) {
 
                 $formaPagtoId = $forma_pagto_id[$i];
 

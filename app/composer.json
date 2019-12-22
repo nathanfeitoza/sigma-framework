@@ -31,5 +31,7 @@
             "Externo\\": "./externo/notcomposer/",
             "Middleware\\": "./middleware/"
         }
+    },
+    "require-dev": {
     }
 }

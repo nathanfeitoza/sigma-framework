@@ -57,13 +57,13 @@ class StimulRelatorioJson extends Model
      */
     public function getJsonRelatorio($arquivo)
     {
-        if(!strpos(strtolower($arquivo), '.json')) {
+        if (!strpos(strtolower($arquivo), '.json')) {
             $arquivo .= '.json';
         }
 
         $local_arquivo = $this->engine()->criarPasta('tmpStimul',true).$arquivo;
 
-        if(!file_exists($local_arquivo)) throw new AppException('Arquivo não encontrado',404,404);
+        if (!file_exists($local_arquivo)) throw new AppException('Arquivo não encontrado',404,404);
 
         $dados = file_get_contents($local_arquivo);
 
@@ -75,7 +75,7 @@ class StimulRelatorioJson extends Model
         $this->loadModel('estoque_mov/estoque_mov');
         $model = $this->model_estoque_mov_estoque_mov;
 
-        if(strlen($id_chave) == 44) {
+        if (strlen($id_chave) == 44) {
             $dados = $model->getEstoqueMovSalvosChaveNfe($id_chave);
         } else {
             $dados = $model->getEstoqueMovSalvoId($id_chave);

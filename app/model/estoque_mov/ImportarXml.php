@@ -36,22 +36,22 @@ class ImportarXml extends Model
         $model_nfe = $this->model_nfe_nfe_core;
         $model_empresa = $this->model_entidade_empresa->getEmpresa();
 
-        if(!is_array($arquivo_xml)) $arquivo_xml = [$arquivo_xml];
+        if (!is_array($arquivo_xml)) $arquivo_xml = [$arquivo_xml];
 
         foreach ($arquivo_xml as $recuperar_envio) {
             $nome_arquivo = $recuperar_envio->getClientFilename();
             $erro_arquivo = $recuperar_envio->getError();
 
-                if($erro_arquivo != 0) {
+                if ($erro_arquivo != 0) {
                     throw new AppException("Não foi possível receber o arquivo ". $nome_arquivo .". Erro: ".Genericos::getErrorUpload($erro_arquivo),15496);
                 }
 
                 $arquivo = explode(".",$nome_arquivo);
                 $extensao = strtolower(end($arquivo));
 
-                if($extensao != "xml")  throw new AppException("O arquivo ".$nome_arquivo." enviado não é um XML", 15497);
+                if ($extensao != "xml")  throw new AppException("O arquivo ".$nome_arquivo." enviado não é um XML", 15497);
 
-                if($recuperar_envio->getSize() > 3145728) throw new AppException("O arquivo ". $nome_arquivo ." enviado excede o limite máximo de 3 MB", 15498);
+                if ($recuperar_envio->getSize() > 3145728) throw new AppException("O arquivo ". $nome_arquivo ." enviado excede o limite máximo de 3 MB", 15498);
 
                 $cnpj = $model_empresa->CNPJ; //Aqui virá o cnpj do usuário
 
@@ -72,7 +72,7 @@ class ImportarXml extends Model
 
                     $upload = (is_int($verificar_nota) OR !file_exists($novo_nome)) ? $model_nfe->setSalvarNotaRecebidaGerada($chNFe,file_get_contents($recuperar_envio->file)) : true;
 
-                    if($upload) {
+                    if ($upload) {
                         $notas[] = $verificar;
                         $ja_cadastradas[] = $model_estoque_mov->getAnalisarNFeEnviada($verificar);
                         $msg[] = $nome_arquivo." recebida com sucesso";
@@ -93,7 +93,7 @@ class ImportarXml extends Model
 
 
 
-        if(isset($msg) and !isset($erro)) {
+        if (isset($msg) and !isset($erro)) {
             $mensagens = implode(", ", $msg);
             $use_notas = $model_nfe->getFormatacaoNotaLida($mensagens, $notas, $ja_cadastradas);
             $usar_buscar = isset($use_notas["nota"][0]->infNFe) ? $use_notas["nota"][0]->infNFe : $use_notas["nota"][0]->NFe->infNFe;
@@ -104,7 +104,7 @@ class ImportarXml extends Model
             //$this->gravarLogSC('access',false, $save);
 
             return $use_notas;
-        } elseif(isset($erro) and !isset($msg)) {
+        } elseif (isset($erro) and !isset($msg)) {
             $mensagens = implode(", ", $erro);
             throw new AppException($mensagens, 276);
         } else {

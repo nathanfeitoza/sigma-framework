@@ -9,14 +9,24 @@
 use \AppCore\Start;
 use \AppCore\Configuracoes;
 
-$configUsuario = './defines/config.php';
-$mensagensUsuario = './defines/mensagem_erro_usuario.php';
+$pastaDefines = 'defines';
 
-if(file_exists($configUsuario)) require $configUsuario;
-if(file_exists($mensagensUsuario)) require $mensagensUsuario;
+$arquivosConfiguracoesAdicionar = [
+    'config',
+    'mensagem_erro_usuario'
+];
 
-require __DIR__.'/app/defines/config.php';
-require __DIR__.'/app/defines/mensagem_erro_usuario.php';
+foreach($arquivosConfiguracoesAdicionar as $arquivoConfig) {
+    $arquivoConfig .= '.php';
+    
+    $configEspecifico = './' . $pastaDefines . '/' . $arquivoConfig;
+    $configDefault = __DIR__ . '/app/' . $pastaDefines . '/' . $arquivoConfig;
+    
+    if (file_exists($configEspecifico)) require_once $configEspecifico;    
+    
+    require_once $configDefault;    
+}
+
 $GLOBALS['config'] = $config;
 require __DIR__.'/app/externo/composer/autoload.php';
 

@@ -168,7 +168,7 @@ class Produto extends Model
         $campo_filtrar = 'lower(codigo)';
         $filtro = strtolower("".$unidade);
 
-        if(is_numeric($unidade)) {
+        if (is_numeric($unidade)) {
             $campo_filtrar = 'id';
             $filtro = (int) $unidade;
         }
@@ -179,7 +179,7 @@ class Produto extends Model
             ->setUsarExceptionNaoEncontrado(false)
             ->buildQuery('select');
 
-        if(is_int($sql)) return false;
+        if (is_int($sql)) return false;
 
         return $sql;
     }
@@ -237,11 +237,11 @@ class Produto extends Model
 
         $dados['DADOS'] = $dadosGrades;
 
-        if(is_int($dados) OR is_bool($dados)) {
+        if (is_int($dados) OR is_bool($dados)) {
             $dados = [];
         }
 
-        if(!$usar_id) {
+        if (!$usar_id) {
             $tamanhos = $this->getListarProdutoTamanho();
             $cores = $this->getListarProdutoCor();
             $dados['TAMANHOS'] = $tamanhos;
@@ -301,7 +301,7 @@ class Produto extends Model
         $buscarPor = 'id';
         $compararPor = '=';
 
-        if(!is_numeric($cfop)) {
+        if (!is_numeric($cfop)) {
             $buscarPor = 'nome';
             $compararPor = 'ilike';
             $cfop = '%'.$cfop.'%';
@@ -348,7 +348,7 @@ class Produto extends Model
 
     public function criarTamanhoCor($tipo, $campo, $valor)
     {
-        if($tipo == 'tamanho') {
+        if ($tipo == 'tamanho') {
             $existe = $this->setFalseException(true)->getProdutoTamanhoNome($valor);
             $method = 'inserir_bd_produto_tamanho';
             $buscar = 'getProdutoTamanhoNome';
@@ -358,7 +358,7 @@ class Produto extends Model
             $buscar = 'getProdutoCorNome';
         }
 
-        if(!is_bool($existe)) throw new AppException(ucfirst($tipo).' já existente', 281);
+        if (!is_bool($existe)) throw new AppException(ucfirst($tipo).' já existente', 281);
 
         $this->$method($campo, $valor);
 
@@ -416,7 +416,7 @@ class Produto extends Model
                 ->whereAnd('cor_id','=',$cor)
                 ->setUsarExceptionNaoEncontrado(false);
 
-            if(is_int($verificar_grade->buildQuery('select'))) {
+            if (is_int($verificar_grade->buildQuery('select'))) {
                 $this->inserir_bd1_produto_grade($campos_add, [$produto_id, $tamanho, $cor]);
 
             } else {
@@ -463,7 +463,7 @@ class Produto extends Model
         $cod_barras = false;
         $id_emitente = false;
 
-        if(!Genericos::verificarCampoPreenchido($parametros_busca,'id_produto_de_para_nfe')) {
+        if (!Genericos::verificarCampoPreenchido($parametros_busca,'id_produto_de_para_nfe')) {
             $necessario = 'cnpj';
             Genericos::verificarCampoPreenchido($parametros_busca, $necessario, true);
             $id_info = false;
@@ -471,7 +471,7 @@ class Produto extends Model
             $id_emitente = Genericos::verificarCampoPreenchido($parametros_busca, 'id_emitente') ? $parametros_busca['id_emitente'] : false;
             $cod_barras = Genericos::verificarCampoPreenchido($parametros_busca, 'cod_barras') ? $parametros_busca['cod_barras'] : false;
 
-            if(Genericos::verificarCampoPreenchido($parametros_busca, 'id_info') && !Genericos::verificarCampoPreenchido($parametros_busca, 'busca_relacao')) {
+            if (Genericos::verificarCampoPreenchido($parametros_busca, 'id_info') && !Genericos::verificarCampoPreenchido($parametros_busca, 'busca_relacao')) {
                 $id_info = $parametros_busca['id_info'];
                 return $this->setUsarException(false)->getProduto($id_info);
             }
@@ -485,13 +485,13 @@ class Produto extends Model
             ->db()->tabela('produto_de_para_nfe')
             ->campos(['id','produto_id','produto_nfe','cnpj','fator','codigo_barras']);
 
-        if(isset($id_produto_de_para_nfe)) {
+        if (isset($id_produto_de_para_nfe)) {
             $buscar->where('id', '=', $id_produto_de_para_nfe);
             $buscar = $buscar->buildQuery('select');
         } else {
             $buscar->where('cnpj', '=', $cnpj_emit);
 
-            if(isset($id_emitente) != false && $cod_barras != false && Genericos::camposVazios((array) $parametros_busca, ['buscando_nfe']) == 1) {
+            if (isset($id_emitente) != false && $cod_barras != false && Genericos::camposVazios((array) $parametros_busca, ['buscando_nfe']) == 1) {
                 $buscar->whereComplex(['produto_nfe','codigo_barras'],['=','='],[$id_emitente, $cod_barras],['AND','OR']);
             } else {
 
@@ -511,12 +511,12 @@ class Produto extends Model
             $buscar = $buscar->buildQuery('select');
         }
 
-        if(!is_int($buscar) && !is_bool($buscar)) {
+        if (!is_int($buscar) && !is_bool($buscar)) {
             foreach ($buscar as $i => $busca) {
                 $produto_info = isset($verificar_produto) ? $verificar_produto : $this->setUsarException(false)->getProduto($busca->PRODUTO_ID);
                 $produto_info = is_int($produto_info) ? false : $produto_info;
 
-                if($produto_info != false) {
+                if ($produto_info != false) {
                     $busca->PRODUTO_GRADE = $produto_info[0]->PRODUTO_GRADE;
                     $busca->PRODUTO_GERAL = $produto_info[0];
                 }
@@ -550,7 +550,7 @@ class Produto extends Model
 
         $und = $this->getProdutoUnidadeMedida($codigo_und);
 
-        if(!$und) {
+        if (!$und) {
             $this->inserir_bd_produto_unidade_medida(['nome', 'fator_conversao', 'codigo'],
                 [$nome, $fator, $codigo_und]);
 
@@ -558,7 +558,7 @@ class Produto extends Model
             return $und;
         }
 
-        if($usar_exception_erro && !is_string($usar_exception_erro)) throw new AppException('Unidade já cadastrada', 401);
+        if ($usar_exception_erro && !is_string($usar_exception_erro)) throw new AppException('Unidade já cadastrada', 401);
         elseif ($usar_exception_erro == 'cod') return $und;
         return false;
     }
@@ -625,14 +625,14 @@ class Produto extends Model
             $produto = (array) $produto;
             $campos_validar = Genericos::camposVazios($produto, $necessarios_produto);
 
-            if($campos_validar != 1)  throw new AppException('Houve um erro ao tentar adicionar o produto de posicao '.$i.'. '.$campos_validar,401);
+            if ($campos_validar != 1)  throw new AppException('Houve um erro ao tentar adicionar o produto de posicao '.$i.'. '.$campos_validar,401);
 
             // Necessários
             $nome_produto = $produto[$necessarios_produto[0]];
 
             $verificarSeJaExistePorNome = $this->setFalseException(true)->getProdutoNome($nome_produto);
 
-            if($verificarSeJaExistePorNome['DADOS']) {
+            if ($verificarSeJaExistePorNome['DADOS']) {
                 $produtoNaoCadastrados[] = $produto;
                 continue;
             }
@@ -684,7 +684,7 @@ class Produto extends Model
             $situacao_grade = Genericos::verificarCampoPreenchido($produto, end($opcionais)) ? $produto[end($opcionais)] : 0;
 
 
-            if($tamanho_grade != false AND $cor_grade != false) {
+            if ($tamanho_grade != false AND $cor_grade != false) {
                 $produto_grade = 1;
                 $produtos_grades_criar[] = [$tamanho_grade, $cor_grade, $situacao_grade];
             }
@@ -703,7 +703,7 @@ class Produto extends Model
             $this->inserir_bd1_produto($campos_produto_bd,$valores_produto_bd);
         }
 
-        if(count($produtos_grades_criar) > 0) {
+        if (count($produtos_grades_criar) > 0) {
             // Recuperar os ultimos itens adicionados com produto_grade = 1 em order by id desc limit count($produtos_grades_criar)
             // select id,produto_grade from empresa01.produto where produto_grade = 1 order by id desc limit 5
             // array_reverse
@@ -764,7 +764,7 @@ class Produto extends Model
     {
         $necessarios = ['id_produto','id_nfe','cnpj'];
 
-        if(!Genericos::verificarCampoPreenchido($dados_cadastrar, 'id_item')) {
+        if (!Genericos::verificarCampoPreenchido($dados_cadastrar, 'id_item')) {
             Genericos::camposVazios($dados_cadastrar, $necessarios, true);
         } else {
             $id_item = $dados_cadastrar['id_item'];
@@ -777,7 +777,7 @@ class Produto extends Model
         $codigo_barras = Genericos::verificarCampoPreenchido($dados_cadastrar, 'codigo_barras') ? $dados_cadastrar['codigo_barras'] : null;
         $codigo_barras = ( !$codigo_barras OR $codigo_barras == "false" ) ? null : $codigo_barras;
 
-        if(!isset($id_item)) {
+        if (!isset($id_item)) {
             $buscar = [
                 'cod_barras' => $codigo_barras,
                 'id_emitente' => $id_nfe,
@@ -793,21 +793,21 @@ class Produto extends Model
         $campos_tabela = ['produto_id','produto_nfe','cnpj','fator','codigo_barras'];
         $valor_campos = [$id_produto, $id_nfe, $cnpj, $fator, $codigo_barras];
 
-        if($acao == 'update') {
+        if ($acao == 'update') {
             $campos = [];
             $valores = [];
 
-            if(!is_null($id_produto)) {
+            if (!is_null($id_produto)) {
                 $campos[] = $campos_tabela[0];
                 $valores[] = $valor_campos[0];
             }
 
-            if(!is_null($id_nfe)) {
+            if (!is_null($id_nfe)) {
                 $campos[] = $campos_tabela[1];
                 $valores[] = $valor_campos[1];
             }
 
-            if(!is_null($cnpj)) {
+            if (!is_null($cnpj)) {
                 $campos[] = $campos_tabela[2];
                 $valores[] = $valor_campos[2];
             }
@@ -824,7 +824,7 @@ class Produto extends Model
             ->tabela('produto_de_para_nfe')
             ->campos($campos_tabela,$valor_campos);
 
-        if($acao == 'update') $executar_sql->where('id', '=', $checar_produto[0]->ID);
+        if ($acao == 'update') $executar_sql->where('id', '=', $checar_produto[0]->ID);
 
         $executar_sql = $executar_sql->buildQuery($acao);
 
@@ -864,7 +864,7 @@ class Produto extends Model
             $item = (array) $item;
             $check_item = Genericos::camposVazios($item,$necessarios_produtos);
 
-            if($check_item != 1) throw new AppException('Erro no item de posição '.$i.'. '.$check_item,403);
+            if ($check_item != 1) throw new AppException('Erro no item de posição '.$i.'. '.$check_item,403);
 
             $retorno[] = $this->setCadastrarAtualizarRelacaoProdutoNFE($item);
         }

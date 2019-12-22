@@ -38,14 +38,14 @@ class Auth extends Model
             ->campos(['id','secret_key','url'])
             ->where('key_api','=',$chaveApi)
             ->setUsarExceptionNaoEncontrado(false);
-            if(is_array($doubleCheck)) {
+            if (is_array($doubleCheck)) {
                 $comparador = isset($doubleCheck[2]) ? $doubleCheck[2] : '=';
                 $verificar->whereAnd($doubleCheck[0],$comparador,$doubleCheck[1]);
             }
 
         $verificar = $verificar->buildQuery('select');
 
-        if(is_int($verificar)) return false;
+        if (is_int($verificar)) return false;
 
         return $verificar;
     }
@@ -113,7 +113,7 @@ class Auth extends Model
                 ->setUsarExceptionNaoEncontrado(false)
                 ->buildQuery('select');
 
-        if(is_int($validar)) return false;
+        if (is_int($validar)) return false;
 
         return $validar;
     }
@@ -178,7 +178,7 @@ class Auth extends Model
     {
         $id = $this->getAuthKey($chaveApi);
 
-        if(!$id) throw new AppException('Chave de API não cadastrada', 1024);
+        if (!$id) throw new AppException('Chave de API não cadastrada', 1024);
 
         $origin = $id[0]->URL;
         $secret = false;
@@ -215,7 +215,7 @@ class Auth extends Model
                         ->whereAnd('expira', '>=', date('Y-m-d H:i:s'))
                         ->setUsarExceptionNaoEncontrado(false)
                         ->buildQuery('select');
-        if(is_int($buscar)) return false;
+        if (is_int($buscar)) return false;
 
         return $buscar[0];
     }
@@ -241,7 +241,7 @@ class Auth extends Model
         $criada = date('Y-m-d H:i:s');
         $getExistToken = $this->getToken($id, $tipoToken);
 
-        if($getExistToken != false) {
+        if ($getExistToken != false) {
             $this->expira = $getExistToken->EXPIRA;
             $chave_criptografia = $this->getGerarChaveCriptTokenOauth($chave_api,$secret);
             return ['token' => $getExistToken->TOKEN, 'expira' => strtotime($this->expira)];
@@ -310,7 +310,7 @@ class Auth extends Model
     {
         preg_match("/(Bearer )+(.*)/", $token, $token_array);
 
-        if(count($token_array) == 3) return $token_array[2];
+        if (count($token_array) == 3) return $token_array[2];
 
         throw new AppException("Token de acesso é inválido", 120);
     }
@@ -335,14 +335,14 @@ class Auth extends Model
         $chave_criptografia = $this->getGerarChaveCriptTokenOauth($chave_api,$secret_acesso);
         $token_decrypt = Genericos::encriptarDecriptar('decrypt', $token, $chave_criptografia);
 
-        if(!$token_decrypt) throw new AppException("Token inválido", 118);
+        if (!$token_decrypt) throw new AppException("Token inválido", 118);
 
         $dados_token_decrypt = Genericos::jsonDecode(
             $token_decrypt,
             'O json do token oauth enviado não é válido'
         );
 
-        if(count((array) $dados_token_decrypt) == 6) return $dados_token_decrypt;
+        if (count((array) $dados_token_decrypt) == 6) return $dados_token_decrypt;
         
         throw new AppException('Token Inválido', 144);
     }
@@ -438,7 +438,7 @@ class Auth extends Model
         $time1 = preg_match("/(.)+[@]/", $chave_api, $time1_return); // Pegamos o valor do time gerado, que é a primeira string validadora (fora a string principal)
         $time2 = preg_match("/[_]+(.*)/", $chave_api, $time2_return); // Pegamos o valor do uniqid gerado, que é a string de validação secundária
 
-        if($validador_primario == 0) throw new AppException( $msg_invalida, 110);
+        if ($validador_primario == 0) throw new AppException( $msg_invalida, 110);
 
         //Estes dois trechos de código removem o @ e o _, respectivamente, do validador primário, que é a string principal
         $str_comum = str_replace('@','',$saida_validada[0] );
@@ -448,24 +448,24 @@ class Auth extends Model
         $digito_validador = substr($str_comum, -1 ); // Retira o digito verificador da String principal, que fica no final da string
         
         // Verifica se ele é numérico, caso não gera um erro
-        if(!is_numeric($digito_validador)) throw new AppException( $msg_invalida, 111);
+        if (!is_numeric($digito_validador)) throw new AppException( $msg_invalida, 111);
         
         $str_comum_sem_digito = substr($str_comum,  0,$cont_str_comum); // Corta a string removendo o digito verificador da mesma
         $str_comum_decript = base64_decode($str_comum_sem_digito); // Desencodifica o hash base64
         $convert_string_comum = substr($chave_cript_api, 0, -$digito_validador); // Corta a string comum com o valor do digito verificador informado
 
         // Compara a string convertida enviada e a constante após ser cortada pelo digito verificador
-        if(strcmp($convert_string_comum, $str_comum_decript) != 0) throw new AppException( $msg_invalida, 112);
+        if (strcmp($convert_string_comum, $str_comum_decript) != 0) throw new AppException( $msg_invalida, 112);
         
         // Verifica se as strings iniciais de validação não são iguais a zero, caso sim um erro será mostrado
-        if(!($time1 != 0 && $time2 != 0)) throw new AppException( $msg_invalida, 113);
+        if (!($time1 != 0 && $time2 != 0)) throw new AppException( $msg_invalida, 113);
 
         // Os códigos abaixo removem o @ do verificaor 1 e o _ do verificador 2 respectivamente
         $time1_rep = str_replace('@','',$time1_return[0]);
         $time2_rep = str_replace('_','',$time2_return[0]);
 
         // Verifica se os validadoras têm seus tamanhos definidos, caso não um erro é disparado
-        if( !(strlen($time1_rep) == 5 && strlen($time2_rep) == 6) ) throw new AppException( $msg_invalida, 114);
+        if ( !(strlen($time1_rep) == 5 && strlen($time2_rep) == 6) ) throw new AppException( $msg_invalida, 114);
         
         return true;
     }

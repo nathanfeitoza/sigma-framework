@@ -19,7 +19,7 @@ class Configuracoes
     public static function set($configuracao, $valor)
     {
         $configuracao = strtoupper($configuracao);
-        if(!is_null(self::get($configuracao))) {
+        if (!is_null(self::get($configuracao))) {
             $GLOBALS['config'][$configuracao] = $valor;
         }
     }

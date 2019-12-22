@@ -23,7 +23,7 @@ function capturarErroFatal()
 {
     $error = error_get_last();
 
-    if(!is_null($error)) {
+    if (!is_null($error)) {
         $class = new \AppCore\ScriptsLinhaComando;
         $mensagemSalvar = 'Ocorreu um erro fatal: ' . $error["message"] . ' - Tipo: ' . $error["type"] . ' - Arquivo: ' . $error["file"] . ' - Linha: ' . $error["line"];
 

@@ -104,14 +104,14 @@ class MenuSc extends Model
         $aplicacao = $campos_menu[ $necessarios[1] ];
         $id_pai = $campos_menu[ end($necessarios) ];
 
-        if(!is_null($id_pai)) {
+        if (!is_null($id_pai)) {
             $ordem = $this->getUltimaOrdemPai($id_pai)[0]->ORDEM;
             $ordem = is_null($ordem) ? 0 : $ordem;
             $ordem = $ordem == 0 ? 0 : $ordem + 1;
             $nome_menu = preg_replace("/(_)/", " ", $nome_menu);
             $aplicacao_salvar = strtolower($aplicacao);
 
-            if($this->verificarExisteArquivoMenu($aplicacao_salvar)) {
+            if ($this->verificarExisteArquivoMenu($aplicacao_salvar)) {
                 $this->inserir_bd_menu_sistema(['descricao','aplicacao','id_pai','ordem'],
                     [$nome_menu, $aplicacao_salvar, $id_pai, $ordem]);
             }

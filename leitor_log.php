@@ -28,7 +28,7 @@
 <script type="text/javascript">
 	function revelar(eu) {
 		var div = eu.parentNode.querySelector('.rastro');
-		if(div.classList.contains('abrir')) {
+		if (div.classList.contains('abrir')) {
 			div.classList.remove('abrir');
 		} else {
 			div.classList.add('abrir');
@@ -47,14 +47,14 @@
 function leitorLog($log) {
 	$quebrar = explode(' - ',$log);
 	
-	if(count($quebrar) != 7) {
+	if (count($quebrar) != 7) {
 		return -1;
 	}
 	
 	$primeira_parte = $quebrar[0];
 	preg_match('/\[+(.*?)\]/', $primeira_parte, $data_log_arr);
 	
-	if(count($data_log_arr) != 2) {
+	if (count($data_log_arr) != 2) {
 		return -2;
 	}
 	
@@ -64,13 +64,13 @@ function leitorLog($log) {
 	
 	preg_match('/(.*?):/', $primeira_parte, $tipo_log_arr);
 	
-	if(count($tipo_log_arr) != 2) {
+	if (count($tipo_log_arr) != 2) {
 		return -3;
 	}
 	
 	$tipo_log = explode('.',$tipo_log_arr[1]);
 	
-	if(count($tipo_log) != 2) {
+	if (count($tipo_log) != 2) {
 		return -4;
 	}
 	
@@ -88,7 +88,7 @@ function leitorLog($log) {
 
 	preg_match('/{"rastro":"(.*)"}/', $rastro, $rastro_arr);
 	
-	if(count($rastro_arr) == 0) {
+	if (count($rastro_arr) == 0) {
 		return -5;
 	}
 
@@ -99,7 +99,7 @@ function leitorLog($log) {
 	
 	$rastro = preg_split('/#(\d*)?\s/', json_decode($rastro)->rastro);
 
-	if(strlen(@$rastro[0]) == 0) {
+	if (strlen(@$rastro[0]) == 0) {
 		unset($rastro[0]);
 		$rastro = array_values($rastro);
 	}
@@ -128,7 +128,7 @@ $linha = 1;
 foreach ($parts as $line) {
     $ler = leitorLog($line);
     
-    if(is_int($ler)) {
+    if (is_int($ler)) {
     	$linhas_erradas[] = 'Erro na linha '.$linha.' - Cod: '.$ler;
     } else {
     	$log_horas[$ler['data']][] = $ler;
@@ -150,7 +150,7 @@ foreach ($log_horas as $i => $hora_log) {
 
 		foreach ($log as $k => $valor_log) {
 
-			if($j == 0) {
+			if ($j == 0) {
 				$th = str_replace('_',' ',$k);
 				$th = ucfirst($th);
 				$head .= '<th>'.$th.'</th>';
@@ -159,7 +159,7 @@ foreach ($log_horas as $i => $hora_log) {
 			$revelador = '';
 			$class = '';
 
-			if(is_array($valor_log)) {
+			if (is_array($valor_log)) {
 				$valor_reveal = implode('</p><p>',$valor_log);
 				$valor_reveal = str_replace('\/','/',$valor_reveal);
 				$valor_reveal = str_replace('\n','',$valor_reveal);

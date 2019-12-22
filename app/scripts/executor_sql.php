@@ -19,20 +19,20 @@ $arquivoSql = $classScript->getOpcao('arquivo');
 $limparTabela = $classScript->getOpcao('limparTabela');
 $whereLimpar = $classScript->getOpcao('whereLimpar');
 
-if(!$arquivoSql) {
+if (!$arquivoSql) {
     $arquivoSql = $classScript->getArgumento(1);
 
-    if(!$arquivoSql) $classScript->setErro('Não informado o arquivo sql para execução', 40401);
+    if (!$arquivoSql) $classScript->setErro('Não informado o arquivo sql para execução', 40401);
 }
 
-if(!file_exists($arquivoSql)) $classScript->setErro('Arquivo '.$arquivoSql.' não encontrado', 40402);
+if (!file_exists($arquivoSql)) $classScript->setErro('Arquivo '.$arquivoSql.' não encontrado', 40402);
 
 $dados = file_get_contents($arquivoSql);
 
 $dados = explode(PHP_EOL, $dados);
 
 $dados = array_filter($dados, function($valor) {
-    if(!is_string($valor)) return true;
+    if (!is_string($valor)) return true;
 
     return strlen($valor) > 0;
 });
@@ -44,7 +44,7 @@ $classScript->setMensagem('Iniciei inserção: '.date('d/m/Y H:i:s'));
 
 try {
 
-    if($limparTabela != false) {
+    if ($limparTabela != false) {
 
         $where = ($whereLimpar != false) ? ' WHERE '.$whereLimpar : '';
 
@@ -57,11 +57,11 @@ try {
         $quantidadeCaracteres = strlen($valor);
         $posicaoPontoEVirgula = strrpos($valor,';');
 
-        if($quantidadeCaracteres == ($posicaoPontoEVirgula + 1)) $valor = substr($valor, 0, $posicaoPontoEVirgula);
+        if ($quantidadeCaracteres == ($posicaoPontoEVirgula + 1)) $valor = substr($valor, 0, $posicaoPontoEVirgula);
 
         $codificacaoString = mb_detect_encoding($valor) ;
 
-        if(!($codificacaoString == "UTF-8" && mb_check_encoding($valor,"UTF-8"))) $valor = utf8_encode($valor);
+        if (!($codificacaoString == "UTF-8" && mb_check_encoding($valor,"UTF-8"))) $valor = utf8_encode($valor);
 
         $objBanco->executarSQL($valor);
     }

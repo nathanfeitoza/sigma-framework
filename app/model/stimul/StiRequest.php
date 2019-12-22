@@ -34,7 +34,7 @@ class StiRequest extends Stimul
         $obj = json_decode($data);
         if ($obj == null) return StiResult::error("JSON parser error");
 
-        if($decodificado) {
+        if ($decodificado) {
             return $obj;
         }
 

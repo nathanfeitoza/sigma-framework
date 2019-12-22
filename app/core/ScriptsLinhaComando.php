@@ -34,7 +34,7 @@ class ScriptsLinhaComando extends Model
     {
         $pastaLogs = '../logs/scripts_linha_comando/';
 
-        if(!file_exists($pastaLogs)) Genericos::mkdir($pastaLogs, true);
+        if (!file_exists($pastaLogs)) Genericos::mkdir($pastaLogs, true);
 
         $nomeArquivo = date('d-m-Y').'.'.$this->getArgumento(0).'.log';
 
@@ -97,8 +97,8 @@ class ScriptsLinhaComando extends Model
 
         $estiloTexto = [];
 
-        if($cor != false) $estiloTexto[] = $cor;
-        if($fundo != false) $estiloTexto[] = $fundo;
+        if ($cor != false) $estiloTexto[] = $cor;
+        if ($fundo != false) $estiloTexto[] = $fundo;
 
         $estiloTexto = implode(';', $estiloTexto);
 
@@ -126,7 +126,7 @@ class ScriptsLinhaComando extends Model
         $retornar = fgets(fopen ("php://stdin","r"));
         $retornar = preg_replace('/\s/', '', $retornar);
     
-        if(strlen($retornar) == 0) {
+        if (strlen($retornar) == 0) {
     
             while(strlen($retornar) == 0) {
                 echo $mensagem;

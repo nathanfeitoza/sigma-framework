@@ -5,6 +5,8 @@
  * Date: 12/03/19
  * Time: 14:26
  */
+
+use AppCore\Configuracoes;
 use AppCore\Genericos;
 
 $errorHandler = function ($c) use ($este) {
@@ -14,14 +16,38 @@ $errorHandler = function ($c) use ($este) {
         $pathEx = explode('/',$path);
         $isApi = strtolower($pathEx[1]) == 'api'; //0
         $resposta = $response->withStatus(500);
+        $isDebug = Configuracoes::get('DEBUG');
+        
+        if ($isApi) {
+            $mensagem = $e->getMessage();
+            
+            if (!$isDebug) {
+                if($e instanceof PDOException) {
+                    $mensagem = 'Houve um erro ao acessar o banco de dados.';
+                }
+            }
 
-        if($isApi) {
-            return $resposta->withHeader('Content-Type','application/json')
-                ->withBody(Genericos::setStream( $c['view']->toJson($c['view']->msgJsonSys($e->getMessage(), false,$e->getCode())) ));
+            return $resposta->withHeader('Content-Type', 'application/json')
+                ->withBody(
+                    Genericos::setStream( 
+                        $c['view']->toJson($c['view']
+                            ->msgJsonSys(
+                                $mensagem, 
+                                false,
+                                $e->getCode()
+                            )
+                        ) 
+                    )
+                );
         }
 
-        return $c['view']->toPage($response, 'error', ['msg' => $e->getMessage(), 'code' => $e->getCode()]);
+        return $c['view']->toPage(
+            $response, 
+            'error', 
+            ['msg' => $e->getMessage(), 'code' => $e->getCode()]
+        );
     };
 };
+
 $this->setContainer('errorHandler',$errorHandler, 5);
 $this->setContainer('phpErrorHandler', $errorHandler, 6);

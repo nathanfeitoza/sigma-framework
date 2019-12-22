@@ -23,7 +23,7 @@ class AppException extends Exception
         $this->codeHttp = $codeHttp;
         $this->msgUsuario = strlen($msgUsuario) == 0 ? $message : $msgUsuario;
 
-        if(!Configuracoes::get('DEBUG')) {
+        if (!Configuracoes::get('DEBUG')) {
             $mensagensErroUsuario = MENSAGENS_ERROS_USUARIO;
 
             $this->msgUsuario = !(@empty($mensagensErroUsuario[$code])) ? $mensagensErroUsuario[$code] : $this->msgUsuario;
@@ -38,8 +38,8 @@ class AppException extends Exception
         $codeHttp = 403;
         $msgUsuario = '';
 
-        if(method_exists($e, 'getCodeHttp')) $codeHttp = $e->getCodeHttp();
-        if(method_exists($e, 'getMsgUsuario')) $msgUsuario = $e->getMsgUsuario();
+        if (method_exists($e, 'getCodeHttp')) $codeHttp = $e->getCodeHttp();
+        if (method_exists($e, 'getMsgUsuario')) $msgUsuario = $e->getMsgUsuario();
 
         $rastro = json_encode(['rastro' => $e->getTraceAsString()]);
 

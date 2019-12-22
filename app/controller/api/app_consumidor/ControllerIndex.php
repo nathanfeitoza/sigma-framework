@@ -19,6 +19,7 @@ class ControllerIndex extends ControllerApi
     {
         $this->ativarRequestToken();
     }
+    
     public function index()
     {
         $this->setOutputJson('Teste pinto duro');

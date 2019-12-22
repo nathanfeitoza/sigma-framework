@@ -113,13 +113,13 @@ class ControllerProduto extends Controller
 
         $verificarProduto = $this->model_produto->setFalseException(true)->getProduto($dados['id_info']);
 
-        if(!$verificarProduto) {
+        if (!$verificarProduto) {
             throw new AppException('Produto com o id '.$dados['id_info'].' não cadastrado', 10584, 404);
         }
 
         $relacao = $this->model_produto->getProdutoNFE($this->getAllParams());
 
-        if(is_int($relacao)) throw new AppException('Produto a ser relacionado não encontrado', 404, 404);
+        if (is_int($relacao)) throw new AppException('Produto a ser relacionado não encontrado', 404, 404);
 
         $this->setOutputJson($relacao);
     }

@@ -35,7 +35,7 @@ class ControllerIndex extends Controller
         $model = $this->model_auth_auth;
         $chaveApi = $this->getAllParams()['key'];
 
-        if($this->tipoAcessoApi == 1) {
+        if ($this->tipoAcessoApi == 1) {
 
             $interno = $model->getTokenInterno($chaveApi);
 
@@ -44,27 +44,27 @@ class ControllerIndex extends Controller
         } elseif ($this->tipoAcessoApi == 2) {
             $secret = $this->getRequest()->getHeader('Secret-key')[0];
             $validar = $model->getAuthSecret($chaveApi, $secret);
-            if(!$validar) throw new AppException('Chave secreta inválida', 1023);
+            if (!$validar) throw new AppException('Chave secreta inválida', 1023);
             $id = $validar[0]->ID;
             $origin = $validar[0]->URL;
-        } elseif($this->tipoAcessoApi == 4) {
+        } elseif ($this->tipoAcessoApi == 4) {
             $dadosUsuario = $this->getParamSend(['user', 'pass'], true);
             $validar = $model->getAuthLoginPass($dadosUsuario['user'], $dadosUsuario['pass']);
-            if(!$validar) throw new AppException('Usuário ou senha errados ou usário não cadastrado', 10005, 404, 'Usuário ou senha inválido ou as credenciais enviadas não foram cadastradas');
+            if (!$validar) throw new AppException('Usuário ou senha errados ou usário não cadastrado', 10005, 404, 'Usuário ou senha inválido ou as credenciais enviadas não foram cadastradas');
             $id = $validar[0]->ID;
             $secret = false;
             $origin = false;
         } else {
             $origin = $this->getRequest()->getHeader('Origin')[0];
             $validar = $model->getAuthOrigin($chaveApi, $origin);
-            if(!$validar) throw new AppException('Este dominio não tem acesso a API', 1025);
+            if (!$validar) throw new AppException('Este dominio não tem acesso a API', 1025);
             $id = $validar[0]->ID;
             $secret = false;
         }
 
         $token = $model->getAcessToken($id,$chaveApi,$secret,$origin, $this->tipoAcessoApi);
 
-        if(!isset($retornar)) $retornar = $model->getReturnOatuh($token);
+        if (!isset($retornar)) $retornar = $model->getReturnOatuh($token);
 
         $this->setOutputJson($retornar,false);
     }
@@ -84,7 +84,7 @@ class ControllerIndex extends Controller
 
         $retornar = Genericos::getDadosUsuarioOauth();
 
-        if($retornar != false) {
+        if ($retornar != false) {
 
             $retornar = $this->model_entidade_entidade
                 ->setCamposRetornar(['id','nome','cnpj','apelido','email'])
@@ -106,7 +106,7 @@ class ControllerIndex extends Controller
         $action = strtolower($dados_gravar[0]);
         $dados_sql = '';
 
-        if($action != 'access') {
+        if ($action != 'access') {
 
             $parametrosQuery = $dados_gravar[2];
 
@@ -194,11 +194,11 @@ class ControllerIndex extends Controller
         $description = [];
 
         foreach ($this->getAllParams() as $i => $valor) {
-            if(is_array($valor)) {
+            if (is_array($valor)) {
                 $valorAdd = [];
 
                 foreach($valor as $j => $valorAjustar) {
-                    if(is_array($valorAjustar)) {
+                    if (is_array($valorAjustar)) {
                         $valorAdd[] = json_encode($valorAjustar);
                     } else {
                         $valorAdd[] = $valorAjustar;
@@ -271,7 +271,7 @@ class ControllerIndex extends Controller
         $query = $this->getParamSend('query');
         $model->setPaginacao($this->getAllParams());
 
-        if($campos !== false) {
+        if ($campos !== false) {
             $nao_listar = ['']; //id
             $campos_listar = $this->getCamposListarCrud($campos['campos'], $nao_listar);
 

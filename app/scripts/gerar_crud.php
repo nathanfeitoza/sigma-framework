@@ -17,7 +17,7 @@ $tabela = $classScript->getDadosNaoPodemVirVazios("Qual tabela você deseja gera
 $usar_schema = $classScript->getYesOrNot("Usar schema");
 $schema = 'bd';
 
-if($usar_schema) {
+if ($usar_schema) {
     $schema = 'bd1';
 }
 
@@ -29,10 +29,10 @@ $usar_deletar = $classScript->getYesOrNot("Usar deletar");
 $usar_listar = $classScript->getYesOrNot("Usar listar");
 $nao_listar = '$campos_listar = $campos["campos"];';
 
-if($usar_listar == 's') {
+if ($usar_listar == 's') {
     $nao_listar = $classScript->stringVirgulaToArray("Campos nao listar: ", '');
 
-    if(!empty($nao_listar[0])) {
+    if (!empty($nao_listar[0])) {
         $nao_listar = '
             $nao_listar = ['.$classScript->printArrayArquivo($nao_listar).'];
             $campos_listar = $this->getCamposListarCrud($campos["campos"], $nao_listar);
@@ -49,7 +49,7 @@ if($usar_listar == 's') {
     }
     ';
 
-    if($listar_com_busca == 's') {
+    if ($listar_com_busca == 's') {
         $listar = '
     public function listar($query = false)
     {
@@ -62,7 +62,7 @@ if($usar_listar == 's') {
 
     $usar_paginacao = $classScript->getYesOrNot('Usar pagincação na listagem');
 
-    if($usar_paginacao == 's') {
+    if ($usar_paginacao == 's') {
         $listar = '
     public function listar($query = false)
     {
@@ -181,7 +181,7 @@ class Controller'.$classe_usar.' extends Controller
         $query = $this->getParamSend("query");
         $model->setPaginacao($this->getAllParams());
 
-        if($campos !== false) {
+        if ($campos !== false) {
             '.$nao_listar.'
             $model->setCamposRetornar($campos_listar);
         }
@@ -192,10 +192,10 @@ class Controller'.$classe_usar.' extends Controller
 ';
 
 $local_salvar_model = dirname(__DIR__) . '/model/'.$namespace.'/';
-if(!file_exists($local_salvar_model)) mkdir($local_salvar_model);
+if (!file_exists($local_salvar_model)) mkdir($local_salvar_model);
 
 $local_salvar_controller = dirname(__DIR__) . '/controller/'.$localController.'/'.$namespace.'/';
-if(!file_exists($local_salvar_controller)) mkdir($local_salvar_controller);
+if (!file_exists($local_salvar_controller)) mkdir($local_salvar_controller);
 
 file_put_contents($local_salvar_model.$classe_usar.'.php', $arquivo_model_saida);
 file_put_contents($local_salvar_controller.'Controller'.$classe_usar.'.php', $arquivo_controller_saida);

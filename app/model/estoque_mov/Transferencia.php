@@ -67,7 +67,7 @@ class Transferencia extends EstoqueMov
         $estoque_mov_id = $estoque_mov_id ? $adicionar['estoque_mov_id'] : false;
         $estoque_mov_id_old = $estoque_mov_id;
 
-        if($estoque_mov_id != false) {
+        if ($estoque_mov_id != false) {
             $this->deletar_bd1_estoque_mov(function($where) use ($estoque_mov_id) {
                 $where->where('id', '=', $estoque_mov_id);
             });
@@ -88,7 +88,7 @@ class Transferencia extends EstoqueMov
 
         $estoque_mov_id = $estoque_mov_id->buildQuery('select')[0]->ID;
 
-        if($estoque_mov_id_old != false) {
+        if ($estoque_mov_id_old != false) {
             $this->atualizar_bd1_estoque_mov('id',$estoque_mov_id_old,
                 function($where) use ($estoque_mov_id){
                     $where->where('id','=', $estoque_mov_id);
@@ -112,8 +112,8 @@ class Transferencia extends EstoqueMov
             $mov_estoque = 1;
             $item = $i + 1;
 
-            if(isset($adicionar['grade_id'])) {
-                if(Genericos::verificarCampoPreenchido($adicionar['grade_id'], $i)) {
+            if (isset($adicionar['grade_id'])) {
+                if (Genericos::verificarCampoPreenchido($adicionar['grade_id'], $i)) {
                     $grade_id = $adicionar['grade_id'][$i];
                 }
             }

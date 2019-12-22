@@ -77,7 +77,7 @@ class OrdemServico extends Model
             ->setObjDb($db)
             ->getServicoItem($servico_id);
 
-        if(is_int($cabecalho) OR is_bool($cabecalho)) return -1;
+        if (is_int($cabecalho) OR is_bool($cabecalho)) return -1;
 
         return ['CABECALHO' => $cabecalho[0], 'HISTORICO' => $atividades, 'MATERIAIS' => $materiais];
     }
@@ -108,12 +108,12 @@ class OrdemServico extends Model
 
         $servico = $servico[0];
 
-        if($iniciar && !is_null($servico->ATENDIMENTO_INICIO)) throw new AppException('O servico de id '.$servico_id.' já foi iniciado',1578);
-        if(!$iniciar && is_null($servico->ATENDIMENTO_INICIO)) throw new AppException('O servico de id '.$servico_id.' não pode ser finalizado sem antes ser finalizado',1579);
+        if ($iniciar && !is_null($servico->ATENDIMENTO_INICIO)) throw new AppException('O servico de id '.$servico_id.' já foi iniciado',1578);
+        if (!$iniciar && is_null($servico->ATENDIMENTO_INICIO)) throw new AppException('O servico de id '.$servico_id.' não pode ser finalizado sem antes ser finalizado',1579);
 
         $data = date('Y-m-d H:i:s');
 
-        if($iniciar) $campo_att = 'atendimento_inicio';
+        if ($iniciar) $campo_att = 'atendimento_inicio';
         else $campo_att = 'atendimento_final';
 
         $this->atualizar_bd1_servico($campo_att, $data, function($where) use ($servico_id) {
@@ -127,7 +127,7 @@ class OrdemServico extends Model
         $trans = $this->db();
         $trans->iniciarTransacao();
 
-        if(!is_numeric($criar)) {
+        if (!is_numeric($criar)) {
             $this->inserir_bd1_servico(array_keys($servico), array_values($servico));
             $id_servico = $this->getIdUltimoServico();
         } else {
@@ -138,14 +138,14 @@ class OrdemServico extends Model
                 });
         }
 
-        if(!is_null($atividades)) {
+        if (!is_null($atividades)) {
             $this->deletar_bd1_servico_atividades(function($where) use ($id_servico){
                 $where->where('servico_id','=',$id_servico);
             });
 
             $necessarios = ['nome_servico','data_servico','tecnico-servico','valor_servico'];
             Genericos::camposVazios($atividades, $necessarios);
-            if(isset($atividades['nome_servico'])) {
+            if (isset($atividades['nome_servico'])) {
                 foreach ($atividades['nome_servico'] as $i => $valor) {
                     $dados = [
                         'servico_id' => $id_servico,
@@ -161,7 +161,7 @@ class OrdemServico extends Model
             }
         }
 
-        if(!is_null($materiais)) {
+        if (!is_null($materiais)) {
             $this->deletar_bd1_servico_item(function($where) use ($id_servico){
                 $where->where('servico_id','=',$id_servico);
             });
@@ -169,7 +169,7 @@ class OrdemServico extends Model
             $necessarios = ['codigo','data_produto','tecnico-historico','quantidade_produto','valor_produto'];
             Genericos::camposVazios($atividades, $necessarios);
 
-            if(isset($materiais['codigo'])) {
+            if (isset($materiais['codigo'])) {
                 foreach ($materiais['codigo'] as $i => $valor) {
                     $dados = [
                         'servico_id' => $id_servico,

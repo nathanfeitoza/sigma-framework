@@ -81,7 +81,7 @@ class Boleto extends Model
      * Autor: Nathan Feitoza
      * Data: 28/03/19 13:42
      * Nome Método: getBoletoRemessa
-     *
+     */listar?campos[]=id&campos[]=nome&campos[]=email&campos[]=senha
      * @param $boleto_remessa_id
      * @return mixed
      * @autor Nathan Feitoza
@@ -152,7 +152,7 @@ class Boleto extends Model
      */
     protected function setVoltarAdiantarRemessaNSUBoleto($voltar_adiantar=false)
     {
-        if(strcasecmp($voltar_adiantar,'adiantar') == 0){
+        if (strcasecmp($voltar_adiantar,'adiantar') == 0){
             return $this->db()->executarSQL("SELECT nextval('".Genericos::getSchema()."remessa_boleto_id') as nsu")[0]->NSU;
         } else {
             return $this->db()->executarSQL("SELECT setval('".Genericos::getSchema()."remessa_boleto_id',?) as nsu",[((int)$this->getRemessaNSUBoleto(false) - 1)])[0]->NSU;
@@ -181,7 +181,7 @@ class Boleto extends Model
 
         $valor_corrente = $valor_corrente->LAST_VALUE;
 
-        if(!$addum) return $valor_corrente;
+        if (!$addum) return $valor_corrente;
 
         return $valor_corrente + 1;
     }
@@ -353,11 +353,11 @@ class Boleto extends Model
             }
         }
 
-        if(count($erroBoletos) > 0) {
+        if (count($erroBoletos) > 0) {
             throw new AppException(implode(', ',$erroBoletos),500);
         }
 
-        if($pdf == false) {
+        if ($pdf == false) {
             return ['Header' => ['Content-Type' => 'text-html; charset=utf-8']];
         }
 
@@ -398,7 +398,7 @@ class Boleto extends Model
      */
     public function gerarRemessa($conta_usar=false, $zipar=false)
     {
-        if($zipar != false) {
+        if ($zipar != false) {
             $zip = $zipar;
         }
 
@@ -411,11 +411,11 @@ class Boleto extends Model
         $remessa_temp = isset($_SESSION['remessa_temp']) ? $_SESSION['remessa_temp'] : $this->nome_remessa_temp;
         $arquivo_lock_nsu = $pasta_remessas . '/'. self::TRAVA_GERACAO_NSU;
 
-        if(file_exists($arquivo_lock_nsu)) {
+        if (file_exists($arquivo_lock_nsu)) {
             unlink($arquivo_lock_nsu);
         }
 
-        if(file_exists($remessa_temp)) {
+        if (file_exists($remessa_temp)) {
             $codigo_banco = Banco::CEF;
             $remessa = new Arquivo($codigo_banco);
             $nsu = $this->getRemessaNSUBoleto();
@@ -555,7 +555,7 @@ class Boleto extends Model
 
         $dados_contaCorrente = $this->formatarObjetosConta($dados_contaCorrente);
 
-        if($this->em_fila != false) {
+        if ($this->em_fila != false) {
             $nome_arquivo_fila = $this->em_fila;
             $verificar_nome_arquivo_fila = strtolower($nome_arquivo_fila) != "true";
 
@@ -565,14 +565,14 @@ class Boleto extends Model
                     $zip_temp = Genericos::encriptarDecriptar('decrypt', $nome_arquivo_fila, Genericos::getChaveCriptografiaZip());
                     $zip_temp = json_decode($zip_temp);
 
-                    if(is_null($zip_temp)) {
+                    if (is_null($zip_temp)) {
                         throw new AppException('Arquivos temporários informados inválidos',292);
                     }
 
-                    if(file_exists($zip_temp[1]))
+                    if (file_exists($zip_temp[1]))
                         $remessa_temp = $zip_temp[1];
 
-                    if(file_exists($zip_temp[0])) {
+                    if (file_exists($zip_temp[0])) {
                         $zip->open($zip_temp[0]);
                         $zip_temp = $zip_temp[0];
                     } else {
@@ -630,7 +630,7 @@ class Boleto extends Model
                 $zipar = isset($zip) ? $zip : false;
                 $salvar_remessa = $this->gerarRemessa($conta_usar,$zipar);
 
-                if(is_array($salvar_remessa)) {
+                if (is_array($salvar_remessa)) {
                     $nsu_remessa = $salvar_remessa[0];
                     $salvar_remessa = $salvar_remessa[1];
                 }
@@ -649,7 +649,7 @@ class Boleto extends Model
                         }
                     }
 
-                    if(file_exists($zip_temp) && isset($nsu_remessa)) {
+                    if (file_exists($zip_temp) && isset($nsu_remessa)) {
                         rename($zip_temp, $zip_final);
                         $arquivo_download = $baixar_somenteRemessa ? $salvar_remessa : $zip_final;
                         $array_retorno = ['download_zip' => Genericos::encriptarDecriptar('encrypt', $arquivo_download, Genericos::getChaveCriptografiaZip())];
@@ -657,10 +657,10 @@ class Boleto extends Model
                     } else {
                         $code = 299;
                         $msg = 'Zip temporário não encontrado';
-                        if(file_exists($zip_temporario) && !isset($nsu_remessa)) {
+                        if (file_exists($zip_temporario) && !isset($nsu_remessa)) {
                             $code = 308;
                             $msg = 'NSU não gerada';
-                        } elseif(!file_exists($zip_temporario) && !isset($nsu_remessa)) {
+                        } elseif (!file_exists($zip_temporario) && !isset($nsu_remessa)) {
                             $code = 309;
                             $msg = 'Zip temporario não encontrado e nsu não gerada';
                         }
@@ -683,7 +683,7 @@ class Boleto extends Model
             $download_remessa = ['download_remessa'=> Genericos::encriptarDecriptar('encrypt', $salvar_remessa, Genericos::getChaveCriptografiaZip())];
             $array_retorno = array_merge($download_boleto, $download_remessa);
 
-            if($baixar_somenteRemessa) {
+            if ($baixar_somenteRemessa) {
                 $array_retorno = $download_remessa;
             }
 
@@ -714,7 +714,7 @@ class Boleto extends Model
      */
     public function prepararImpressao($documento)
     {
-        if($_SESSION) @session_start();
+        if ($_SESSION) @session_start();
         $_SESSION['dados_boleto'] = json_decode($documento, true);
 
         return 'Iniciado';
@@ -740,7 +740,7 @@ class Boleto extends Model
         $empresa = $this->empresa->getEmpresa();
         ob_start();
         try {
-            if(isset($_SESSION['dados_boleto'])){
+            if (isset($_SESSION['dados_boleto'])){
                 $documento = json_encode($_SESSION['dados_boleto'][0]);
                 unset($_SESSION['dados_boleto']);
             } else {
@@ -754,7 +754,7 @@ class Boleto extends Model
         } catch (\Exception $e) {
             $msg = $e->getMessage();
 
-            if($e->getCode() == 710) {
+            if ($e->getCode() == 710) {
                 $msg = explode(';',$msg);
                 $msg = $msg[0];
             }
@@ -787,7 +787,7 @@ class Boleto extends Model
      */
     public function getRemessaGerada($remessas)
     {
-        if(count($remessas) > 1) {
+        if (count($remessas) > 1) {
             $pasta_remessa = $this->getPastaRemessa();
             $zip_lote_remessa = $pasta_remessa . '/lote-remessas_'.date('Y-m-d').time().uniqid().'.zip';
             $zip = new \ZipArchive();
@@ -795,7 +795,7 @@ class Boleto extends Model
         }
 
         foreach ($remessas as $numero_remessa) {
-            if(!is_numeric($numero_remessa)) throw new AppException('A remessa de nsu '.$numero_remessa.' não é um valor numérico', 296);
+            if (!is_numeric($numero_remessa)) throw new AppException('A remessa de nsu '.$numero_remessa.' não é um valor numérico', 296);
 
             $caminho_arquivo_bd = $this->setCamposRetornar(['pasta_remessa'])
                 ->setFalseException(true)
@@ -804,13 +804,13 @@ class Boleto extends Model
             $remessa = $caminho_arquivo_bd[0]->PASTA_REMESSA;
             $nome_remessa = basename($remessa);
 
-            if(isset($zip)) $zip->addFile($remessa, $nome_remessa);
+            if (isset($zip)) $zip->addFile($remessa, $nome_remessa);
         }
 
         $chave = "arq";
         $retorno = $remessa;
 
-        if(isset($zip)) {
+        if (isset($zip)) {
             $zip->close();
             $chave = "zip";
             $retorno = $zip_lote_remessa;
@@ -854,14 +854,14 @@ class Boleto extends Model
             $baixado = false;
             $nome_cliente = 'Boleto não encontrado';
 
-            if(!is_int($buscarCliente)) {
+            if (!is_int($buscarCliente)) {
                 $baixado = !is_null($buscarCliente[0]->DATA_BAIXA) && strlen($buscarCliente[0]->DATA_BAIXA) != 0 ? true : $baixado;
                 $nome_cliente = $buscarCliente[0]->NOME;
             }
             $valorRecebido = $detalhe->getValorRecebido();
 
-            //if($valorRecebido > 0) {
-            if($nosso_numero != 0) {
+            //if ($valorRecebido > 0) {
+            if ($nosso_numero != 0) {
                 $retorno[] = [
                     'ValorRecebido' => $valorRecebido,
                     'NomeCliente' => $nome_cliente,

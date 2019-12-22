@@ -53,12 +53,12 @@ class Stimul extends Model
             // SQL query string for the current data source
             $queryString = $event->queryString;
 
-            if($event->sender == "Viewer") {
+            if ($event->sender == "Viewer") {
                 $queryString = json_decode($queryString);
 
                 preg_match_all("/{([^}]+)}/", $queryString[3], $output_array);
 
-                if(isset($output_array[0])) {
+                if (isset($output_array[0])) {
                     for($i = 0, $cont_params = count($output_array[0]); $i < $cont_params; $i++) {
                         //$valor[] = $queryString[0][$i];
                         $event->parameters[] = Genericos::limparStringSQL( $queryString[0][$i] );
@@ -126,7 +126,7 @@ class Stimul extends Model
             $cript_smtp = false;
             $host = $configs_smtp->HOST;
 
-            if(strpos($configs_smtp->HOST, '://') != false) {
+            if (strpos($configs_smtp->HOST, '://') != false) {
                 $cript_smtp = explode('://', $configs_smtp->HOST);
                 $host = $cript_smtp[1];
                 $cript_smtp = $cript_smtp[0];
@@ -163,10 +163,10 @@ class Stimul extends Model
 
             preg_match("/img_logo\"\s?(.*)\"ImageBytes\":\"(data:image\/[^;]+;base64[^\"]+)\"}/i", $reportJson, $saida_img_logo);
 
-            if(count($saida_img_logo) == 3) {
+            if (count($saida_img_logo) == 3) {
                 $base_subs = $saida_img_logo[2];
                 $img_subs = $this->container->empresa->IMGEM_LOGO_RELATORIOS;
-                if(file_exists($img_subs)) {
+                if (file_exists($img_subs)) {
                     $extensao = pathinfo($img_subs, PATHINFO_EXTENSION);
                     $img = file_get_contents($img_subs);
                     $base64 = 'data:image/' . $extensao . ';base64,' . base64_encode($img);
@@ -177,7 +177,7 @@ class Stimul extends Model
 
             }
 
-            if(file_put_contents($arquivo_gravar, $reportJson)) {
+            if (file_put_contents($arquivo_gravar, $reportJson)) {
                 $menu = new MenuSc;
                 $id_pai = !isset($event->fileName->idPai) ? null : $event->fileName->idPai;
 
@@ -256,7 +256,7 @@ class Stimul extends Model
         
         preg_match("/\sas\s/", $campo_exibir, $contem_as); // Verifica se contem o "as" que seria para dar outro nome ao campo
 
-        if(count($contem_as) != 0) { // Caso tenha "as", remove-o
+        if (count($contem_as) != 0) { // Caso tenha "as", remove-o
             $campo_usar_where = explode('as', $campo_exibir);
             $campo_usar_where = count($campo_usar_where) == 2 ? $campo_usar_where[0] : $campo_exibir;
         }

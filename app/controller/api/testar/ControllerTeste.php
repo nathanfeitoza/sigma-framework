@@ -53,7 +53,7 @@ class ControllerTeste extends Controller
         $query = $this->getParamSend("query");
         $model->setPaginacao($this->getAllParams());
 
-        if($campos !== false) {
+        if ($campos !== false) {
             $campos_listar = $campos["campos"];
             $model->setCamposRetornar($campos_listar);
         }

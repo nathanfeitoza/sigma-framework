@@ -34,20 +34,20 @@ $twig = function($container) use ($este) {
             $args = is_array($args) ? $args : [$args];
             $modelCarregar = Genericos::loadModelGeneric($model);
 
-            if(!method_exists($modelCarregar, $method)) {
+            if (!method_exists($modelCarregar, $method)) {
                 return $erro('Método '.$method.' não encontrado para o model: '.$model, 1014);
             }
 
             $objReflection = new ReflectionMethod($modelCarregar, $method);
 
-            if(!$objReflection->isPublic()) {
+            if (!$objReflection->isPublic()) {
                 return $erro('Método '.$method.' do model '.$model.' não é público', 1015);
             }
 
             $paramsMethod = $objReflection->getParameters();
 
             foreach ($paramsMethod as $param) {
-                if(!$param->isOptional() and count($paramsMethod) != count($args)) {
+                if (!$param->isOptional() and count($paramsMethod) != count($args)) {
                     return $erro('Número de argumentos inválido para o método '.$method.' do model '.$model, 1016);
                 }
             }
@@ -135,11 +135,11 @@ $twig = function($container) use ($este) {
         $dados = (array) $dados;
         $arrMem = '';
 
-        if($checkError($dados)) {
+        if ($checkError($dados)) {
             return '';
         }
 
-        if($index_buscar != false) {
+        if ($index_buscar != false) {
             foreach ($index_buscar as $i => $niv) {
                 if ($i == 0) {
                     if (isset($dados[$niv])) {
@@ -169,9 +169,9 @@ $twig = function($container) use ($este) {
             $mostrarUsar = '';
 
             foreach($mostrar as $indexMostrar) {
-                if(isset($valores[$indexMostrar])) {
+                if (isset($valores[$indexMostrar])) {
                     $mostrarUsar .= $valores[$indexMostrar];
-                    if(end($mostrar) != $indexMostrar) {
+                    if (end($mostrar) != $indexMostrar) {
                         $mostrarUsar .= $separador_mostrar;
                     }
                 }
@@ -206,18 +206,18 @@ $twig = function($container) use ($este) {
             $optionStr = false;
             $label = '';
 
-            if(count($input) == 4) {
+            if (count($input) == 4) {
                 $label = $input[1];
                 $input[1] = $input[2];
                 $input[2] = $input[3];
                 unset($input[3]);
             }
 
-            if(in_array($inputTipo, $diferenciados)) {
+            if (in_array($inputTipo, $diferenciados)) {
 
-                if($inputTipo == $diferenciados[2]) {
+                if ($inputTipo == $diferenciados[2]) {
                     $inputRetorno = '<select ';
-                } elseif($inputTipo == $diferenciados[0]) {
+                } elseif ($inputTipo == $diferenciados[0]) {
                     $botaoSubmit = true;
                     $inputRetorno = '<button ';
                 } else {
@@ -230,22 +230,22 @@ $twig = function($container) use ($este) {
                 $inputRetorno = '<input type="'.$inputTipo.'" ';
             }
 
-            if(isset($input[1])) {
+            if (isset($input[1])) {
                 $inputRetorno .= 'class="'.$input[1].'" ';
             }
 
-            if(isset($input[2])) {
+            if (isset($input[2])) {
 
                 foreach($input[2] as $j => $inputAtributos) {
                     $j = strtolower($j);
 
-                    if($j == 'option') {
-                        if(!is_array($inputAtributos)) return -2;
+                    if ($j == 'option') {
+                        if (!is_array($inputAtributos)) return -2;
                         $optionStr = '';
                         foreach($inputAtributos as $k => $option) {
                             $atributos = '';
 
-                            if(is_array($option)) {
+                            if (is_array($option)) {
                                 foreach($option as $l => $atributoOption) {
                                     $atributos .= $l.'="'.$atributoOption.'"';
                                 }
@@ -255,7 +255,7 @@ $twig = function($container) use ($este) {
                             $optionStr .= '<option '.$atributos.' >'. $option .'</option>';
                         }
                     } else {
-                        if(strtolower($j) == 'titulo') {
+                        if (strtolower($j) == 'titulo') {
                             $tituloBotao = $inputAtributos;
                         } else {
                             $inputsAtributosRetornar .= $j.' = "'.$inputAtributos.'" ';
@@ -264,26 +264,26 @@ $twig = function($container) use ($este) {
                 }
             }
 
-            if($fecharFinal != false) {
+            if ($fecharFinal != false) {
                 $inputRetorno .= $inputsAtributosRetornar.' />';
             }
 
-            if($optionStr != false) {
+            if ($optionStr != false) {
                 $inputRetorno .= $inputsAtributosRetornar.' >'.$optionStr.'</select>';
             }
 
-            if($botaoSubmit != false) {
+            if ($botaoSubmit != false) {
                 $tituloBtn = isset($tituloBotao) ? $tituloBotao : 'Sem Titulo';
                 $inputRetorno .= '>'.$tituloBtn.'</button>';
             }
 
             $verificarLabel = is_string($label) ? strlen($label) : count($label);
 
-            if($verificarLabel > 0 && $botaoSubmit == false) {
+            if ($verificarLabel > 0 && $botaoSubmit == false) {
                 $atributosLabel = '';
 
-                if(is_array($label)) {
-                    if(isset($label[1])) {
+                if (is_array($label)) {
+                    if (isset($label[1])) {
                         foreach($label[1] as $m => $labelAtributo) {
                             $atributosLabel .= $m. '="'.$labelAtributo.'"';
                         }
@@ -294,7 +294,7 @@ $twig = function($container) use ($este) {
                 $inputRetorno = '<label '.$atributosLabel.'>'.$label.'</label>'.$inputRetorno;
             }
 
-            if(is_string($i)) {
+            if (is_string($i)) {
                 $inputRetorno = '<div class="'.$i.'">'.$inputRetorno.'</div>';
             }
 

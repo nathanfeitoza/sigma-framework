@@ -15,7 +15,7 @@ class Genericos
 {
     public static function convertClassMethod($elemento, $type)
     {
-        if($type == 1) {
+        if ($type == 1) {
             $classe = str_replace('_',' ', $elemento);
             $classe = ucwords($classe);
             $classe = str_replace(' ','', $classe);
@@ -50,7 +50,7 @@ class Genericos
             $modelUse = $loadModel[0];
             $nameSpaceAdd = '';
 
-            if(count($loadModel) > 1) {
+            if (count($loadModel) > 1) {
                 $modelUse = end($loadModel);
                 array_pop($loadModel);
                 $nameSpaceAdd = implode('\\', $loadModel) . '\\';
@@ -65,7 +65,7 @@ class Genericos
                 throw new AppException('O model "' . $model . '" solicitado não foi encontrado', 1002, 403);
             }
 
-            if($return == 2) return [$modelSave, $class];
+            if ($return == 2) return [$modelSave, $class];
 
             return $class;
     }
@@ -75,7 +75,7 @@ class Genericos
         $quantidade = count($necessarios);
 
         for($i = 0; $i < $quantidade; $i++) {
-            if(is_array($array_dados)) {
+            if (is_array($array_dados)) {
                 if (!array_key_exists($necessarios[$i], $array_dados)) {
                     $nao_encontrados[] = $necessarios[$i];
                 } else {
@@ -92,13 +92,13 @@ class Genericos
             }
         }
 
-        if(isset($nao_encontrados) AND (count($nao_encontrados) != 0) AND !isset($vazios)) {
+        if (isset($nao_encontrados) AND (count($nao_encontrados) != 0) AND !isset($vazios)) {
             $faltam = implode(",",$nao_encontrados);
             $msg = 'Faltam os seguintes campos: '.$faltam;
-        } elseif(isset($vazios) AND (count($vazios) != 0) AND !isset($nao_encontrados)) {
+        } elseif (isset($vazios) AND (count($vazios) != 0) AND !isset($nao_encontrados)) {
             $vazios = implode(",",$vazios);
             $msg = 'Os seguintes campos estão vazios: '.$vazios;
-        } elseif(isset($vazios) AND (count($vazios) != 0) AND isset($nao_encontrados) AND (count($nao_encontrados)) != 0) {
+        } elseif (isset($vazios) AND (count($vazios) != 0) AND isset($nao_encontrados) AND (count($nao_encontrados)) != 0) {
             $faltam = implode(",",$nao_encontrados);
             $vazios = implode(",",$vazios);
             $msg = 'Faltam os seguintes campos: '.$faltam.' e os seguintes campos esão vazios: '.$vazios;
@@ -106,7 +106,7 @@ class Genericos
             $msg = 1;
         }
 
-        if($exception and (isset($faltam) or isset($vazios)) ) throw new AppException($msg, 269);
+        if ($exception and (isset($faltam) or isset($vazios)) ) throw new AppException($msg, 269);
 
         return $msg;
     }
@@ -125,15 +125,15 @@ class Genericos
     public static function verificarCampoPreenchido($array_campo, $campo_verificar, $gerar_exception_nao_encontrado=false)
     {
         $array_campo = is_array($array_campo) ? (array) $array_campo : $array_campo;
-        if(isset($array_campo[$campo_verificar])) {
-            if(!empty($array_campo[$campo_verificar]) OR
+        if (isset($array_campo[$campo_verificar])) {
+            if (!empty($array_campo[$campo_verificar]) OR
                 ( (is_string($array_campo[$campo_verificar]) OR is_numeric($array_campo[$campo_verificar])) AND
                     ($array_campo[$campo_verificar] == "0" OR $array_campo[$campo_verificar] == 0) ) ) {
                 return true;
             }
         }
 
-        if($gerar_exception_nao_encontrado) throw new AppException($campo_verificar.' não encontrado',270,404);
+        if ($gerar_exception_nao_encontrado) throw new AppException($campo_verificar.' não encontrado',270,404);
         return false;
     }
 
@@ -160,7 +160,7 @@ class Genericos
     {
         $fh = fopen($stream, $modo); // Este handler abaixo foi colocado para que o Slim não deixe de exibir um texto muito grande na saída HTTP, por exemplo, um JSON extenso
         $stream = new Stream($fh); // É registrado o Handle no Slim;
-        if($write) $stream->write($valor); // É escrito o retorno
+        if ($write) $stream->write($valor); // É escrito o retorno
         return $stream;
     }
 
@@ -170,8 +170,8 @@ class Genericos
         $msg_erro = (string) $msg_erro.'';
         $json = json_decode($json, $options_json);
 
-        if(is_null($json) || !$json) {
-            if($excep) throw new AppException($msg_erro,323);
+        if (is_null($json) || !$json) {
+            if ($excep) throw new AppException($msg_erro,323);
             return $msg_erro;
         }
 
@@ -194,26 +194,26 @@ class Genericos
     public static function getSchema($nome_schema=false)
     {
         $schema = 'empresa01';
-        if(!isset($_SESSION)) @session_start();
-        if(isset($_SESSION['schema'])) $schema = $_SESSION['schema'];
-        if($nome_schema) return $schema;
+        if (!isset($_SESSION)) @session_start();
+        if (isset($_SESSION['schema'])) $schema = $_SESSION['schema'];
+        if ($nome_schema) return $schema;
 
         return $schema.'.';
     }
 
     public static function getUsuarioSCLogado($id_usuario=false, $usar_exception=true,$retorno_nao_encontrado=false)
     {
-        if(!isset($_SESSION)) session_start();
-        if(isset($_SESSION['usuario_id']) && $id_usuario) return $_SESSION['usuario_id']; // Retorna o login do usuário logado
-        if(isset($_SESSION['usr_login']) && $id_usuario != true) return $_SESSION['usr_login']; // Retorna o id do usuário logado
+        if (!isset($_SESSION)) session_start();
+        if (isset($_SESSION['usuario_id']) && $id_usuario) return $_SESSION['usuario_id']; // Retorna o login do usuário logado
+        if (isset($_SESSION['usr_login']) && $id_usuario != true) return $_SESSION['usr_login']; // Retorna o id do usuário logado
 
-        if($usar_exception) throw new AppException('Nenhum usuário logado', 298, 401);
+        if ($usar_exception) throw new AppException('Nenhum usuário logado', 298, 401);
         else return $retorno_nao_encontrado;
     }
 
     public static function mkdir($pasta, $recursivo=true)
     {
-        if(!@mkdir($pasta, 0755, $recursivo)) {
+        if (!@mkdir($pasta, 0755, $recursivo)) {
             $error = error_get_last();
             throw new AppException($error['message'],$error['type'],500);
         }
@@ -223,7 +223,7 @@ class Genericos
 
     public static function saveArquivo($arquivo, $dados, $flags=null)
     {
-        if(!@file_put_contents($arquivo, $dados, $flags)) {
+        if (!@file_put_contents($arquivo, $dados, $flags)) {
             $error = error_get_last();
             throw new AppException($error['message'],$error['type'],500);
         }
@@ -262,7 +262,7 @@ class Genericos
                 $erro = 'Erro não identificado';
         }
 
-        if(!is_bool($erro) and $exception) throw new AppException($erro, $cod_error, 500);
+        if (!is_bool($erro) and $exception) throw new AppException($erro, $cod_error, 500);
 
         return $erro;
     }
@@ -288,11 +288,11 @@ class Genericos
         $pasta_externos = Configuracoes::get('ROOTDIR').'app/externo/notcomposer/';
 
         foreach($files as $file) {
-            if(!strpos('.php', $file)) $file .= '.php';
+            if (!strpos('.php', $file)) $file .= '.php';
 
             $arquivo = $pasta_externos.$file;
 
-            if(!file_exists($arquivo)) {
+            if (!file_exists($arquivo)) {
                 throw new AppException('O arquivo '.$arquivo.' solicitada a inclusão não existe', 1039, 500, 'Erro interno');
             }
 
@@ -313,7 +313,7 @@ class Genericos
      */
     public static function limparStringSQL($string)
     {
-        if(isset($string->innerDate)) {
+        if (isset($string->innerDate)) {
             $string = $string->innerDate;
             $string = date('Y-m-d', strtotime($string));
         }
@@ -333,10 +333,10 @@ class Genericos
 
     public static function converterNumero($numero)
     {
-        if(strpos($numero,',') != false) {
+        if (strpos($numero,',') != false) {
             $numero_c = str_replace('.','', $numero);
             $numero_c = str_replace(',','.', $numero_c);
-            if(is_numeric($numero_c)) {
+            if (is_numeric($numero_c)) {
                 return (float) $numero_c;
             }
             return $numero;
@@ -348,7 +348,7 @@ class Genericos
     public static function retornarFloat($val)
     {
         $n_t = str_replace("R$", "", $val);
-        if(strrpos($n_t,",") === true AND strrpos($n_t,".") === true) {
+        if (strrpos($n_t,",") === true AND strrpos($n_t,".") === true) {
             $n_t = str_replace(".", "", $n_t);
             $n_t = str_replace(",", ".", $n_t);
         } else {
@@ -359,7 +359,7 @@ class Genericos
 
     public static function getDadosUsuarioOauth()
     {
-        if(isset($GLOBALS['dados_usuario_oauth'])) {
+        if (isset($GLOBALS['dados_usuario_oauth'])) {
             return (array) $GLOBALS['dados_usuario_oauth'];
         }
 

@@ -32,7 +32,7 @@ class EstoqueMov extends Model
     {
         $retornar = $this->db()->tabela(Genericos::getSchema().'estoque_mov '.$this->getAliasTabela());
 
-        if(strlen($estoqueMovIdChaveNf) == 44) {
+        if (strlen($estoqueMovIdChaveNf) == 44) {
             $retornar->where($this->getAliasCampo().'chave_nfe', '=', $estoqueMovIdChaveNf);
         } else {
             $retornar->where($this->getAliasCampo().'id', '=', $estoqueMovIdChaveNf);
@@ -62,7 +62,7 @@ class EstoqueMov extends Model
             ->where($this->getAliasCampo().'estoque_mov_id', '=', $estoqueMovIdItem)
             ->whereOr($this->getAliasCampo().'id', '=', $estoqueMovIdItem);
 
-        if($produto_id != false) {
+        if ($produto_id != false) {
             $dados->whereAnd($this->getAliasCampo().'produto_id','=',$produto_id);
         }
 
@@ -109,7 +109,7 @@ class EstoqueMov extends Model
             ->campos(["last_value"])
             ->buildQuery('select');
 
-        if(is_int($sql)) {
+        if (is_int($sql)) {
             return false;
         }
 
@@ -147,13 +147,13 @@ class EstoqueMov extends Model
 
         $cabecalho_nota = $cabecalho_nota->setObjDb($db)->getEstoqueMov($estoque_mov_id);
 
-        if(is_bool($cabecalho_nota)) return -1;
+        if (is_bool($cabecalho_nota)) return -1;
 
         $cabecalho_nota[0]->PAGTO = $this->setCamposRetornar(['forma_pagamento_id as FORMA_PAGTO_ID', 'valor', 'id'])
             ->setFalseException(true)
             ->getEstoqueMovPagto($estoque_mov_id);
 
-        if(is_bool($cabecalho_nota[0]->PAGTO)) {
+        if (is_bool($cabecalho_nota[0]->PAGTO)) {
             $cabecalho_nota[0]->PAGTO = [];
         }
 
@@ -170,7 +170,7 @@ class EstoqueMov extends Model
 
         $produtos_nfe = $produtos_nfe->getEstoqueMovItem($estoque_mov_id);
 
-        if(is_bool($produtos_nfe)) return -2;
+        if (is_bool($produtos_nfe)) return -2;
 
         $this->loadModel('produto/produto');
         $produto = $this->model_produto_produto;
@@ -178,7 +178,7 @@ class EstoqueMov extends Model
         foreach ($produtos_nfe as $key => $valor) {
             $grade = $valor->PRODUTO_GRADE_ID;
 
-            if($grade != null) {
+            if ($grade != null) {
                 $valor->GRADE = $produto->setFalseException(false)->getProdutoGrade($grade, true);
             }
 
@@ -211,13 +211,13 @@ class EstoqueMov extends Model
             ->setMsgNaoEncontrado('Nota '.$chave_nfe.' não encontrada na base de dados')
             ->getEstoqueMov($chave_nfe);
 
-        if(is_int($verificar_nota)) return false;
+        if (is_int($verificar_nota)) return false;
 
         $estoque_mov_id_chave_nfe = $verificar_nota[0]->ID;
 
-        if($estoque_id_somente) return $estoque_mov_id_chave_nfe;
+        if ($estoque_id_somente) return $estoque_mov_id_chave_nfe;
 
-        if($sem_itens && !is_int($verificar_nota)) {
+        if ($sem_itens && !is_int($verificar_nota)) {
             $db = $this->db()->leftJoin(Genericos::getSchema().'produto_grade b', 'a.produto_grade_id = b.id');
             $verificar_nota = $this->setAliasTabela('a')
                 ->setCamposRetornar(['a.id','a.produto_id','a.produto_grade_id','b.cor_id', 'b.tamanho_id']) // 'b.cor', 'b.tamanho'
@@ -261,11 +261,11 @@ class EstoqueMov extends Model
             $cEan = ( is_string($prod->cEAN) ) ? $prod->cEAN : 0; //cProd
             $produto_bd = $model_produto->setUsarException(false)->getProdutoNFE(['cnpj'=>$cnpj_entidade, 'id_emitente'=>$produto_id]);
 
-            if(is_int($produto_bd)) {
+            if (is_int($produto_bd)) {
                 $produto_bd = $model_produto->setUsarException(false)->getProdutoNFE(['cnpj'=>$cnpj_entidade, 'cod_barras'=>$cEan]);
             }
 
-            if(!is_int($produto_bd)) {
+            if (!is_int($produto_bd)) {
                 $produto_bd = $model_produto->setUsarException(false)->getProduto($produto_bd[0]->PRODUTO_ID);
                 $produto_bd = is_int($produto_bd) ? false : $produto_bd;
             } else {
@@ -273,8 +273,8 @@ class EstoqueMov extends Model
             }
 
             //vBCSTRet e vICMSSTRet
-            if($quant_produtos == false) {
-                if($produto_bd != false) {
+            if ($quant_produtos == false) {
+                if ($produto_bd != false) {
 
                     $produto_bd = $produto_bd[0];
                     $dados_bd[] = [
@@ -320,13 +320,13 @@ class EstoqueMov extends Model
 
         $chave_nfe = $model_nfe->getChaveNFe((object) $objeto_nfe);
 
-        if(isset($objeto_nfe->NFe)) {
+        if (isset($objeto_nfe->NFe)) {
             $objeto_nfe = $objeto_nfe->NFe->infNFe;
-        } elseif(isset($objeto_nfe->infNFe)) {
+        } elseif (isset($objeto_nfe->infNFe)) {
             $objeto_nfe = $objeto_nfe->infNFe;
         }
 
-        if(isset($objeto_nfe)) {
+        if (isset($objeto_nfe)) {
             $destinatario = $objeto_nfe->dest;
             $emitente = $objeto_nfe->emit;
 
@@ -344,8 +344,8 @@ class EstoqueMov extends Model
 
             $verificar_cnpj_emitente = $model_fornecedor->setFalseException(true)->getFornecedorCNPJ($cnpj_emit); //Faz o mesmo que a variável acima, só que com o emitente
 
-            //if("ok" == "ok") { //$verificar_cnpj_destin == "ok" -- Fazer critica para o usuário que tem um destinatario diferente
-            if($verificar_cnpj_emitente == false) {
+            //if ("ok" == "ok") { //$verificar_cnpj_destin == "ok" -- Fazer critica para o usuário que tem um destinatario diferente
+            if ($verificar_cnpj_emitente == false) {
                 $dados_emitente = $objeto_nfe->emit;
                 // Passar o array que irá fazer a autorização para cadastrar fornecedor
                 $autorizar_cadastrar_fornecedor = ["dados_fornecedor" => $dados_emitente];
@@ -362,13 +362,13 @@ class EstoqueMov extends Model
 
             $estoque = $this->setUsarException(false)->getEstoqueMovSalvosChaveNfe($chave_nfe,true);
 
-            if($estoque != false) {
+            if ($estoque != false) {
                 $estoque = $this->setUsarException(false)->getEstoqueMovSalvoId($estoque);
             } else {
                 $estoque = null;
             }
 
-            if(!is_null($produtos)) {
+            if (!is_null($produtos)) {
                 foreach ($produtos as $i => $prods) {
                     $dados = $this->setUsarException(false)->getEstoqueMovSalvosChaveNfe($chave_nfe,false,$prods['id']);
                     $produtos[$i]['estoque'] = is_int($dados) ? null : $dados[0];
@@ -445,13 +445,13 @@ class EstoqueMov extends Model
         $valor_forma_pagto = Genericos::camposVazios($dados_cadastrar_atualizar, ['valor_forma_pagto']) == 1 ? $dados_cadastrar_atualizar['valor_forma_pagto'] : null;
         $chave_nfe = Genericos::camposVazios($dados_cadastrar_atualizar, ['chave_nfe']) == 1 ? $dados_cadastrar_atualizar['chave_nfe'] : null;
 
-        if(!is_null($chave_nfe)) {
+        if (!is_null($chave_nfe)) {
             $chave_nfe = substr($chave_nfe, 0, 44);
         }
 
         $autorizacao_nfe = Genericos::camposVazios($dados_cadastrar_atualizar, ['autorizacao_nfe']) == 1 ? $dados_cadastrar_atualizar['autorizacao_nfe'] : null;
 
-        if(!is_null($autorizacao_nfe)) {
+        if (!is_null($autorizacao_nfe)) {
             $autorizacao_nfe = substr($autorizacao_nfe, 0, 10);
         }
 
@@ -501,7 +501,7 @@ class EstoqueMov extends Model
         $unidades = [];
         $produtos_enviados = Genericos::camposVazios($dados_cadastrar_atualizar,[$necessarios_itens[0]]) == 1;
 
-        if($produtos_enviados) {
+        if ($produtos_enviados) {
             Genericos::camposVazios($dados_cadastrar_atualizar, $necessarios_itens, true);
             foreach ($dados_cadastrar_atualizar[$necessarios_itens[0]] as $chave_pre => $valor_pre) {
                 if (strlen($valor_pre) != 0) {
@@ -523,7 +523,7 @@ class EstoqueMov extends Model
             ->whereAnd('entidade_id','=', $entidade_id,$id_estoque)
             ->whereAnd('id', '<>', $id_estoque);
 
-        if(!is_int($verificar_existe->buildQuery('select'))) {
+        if (!is_int($verificar_existe->buildQuery('select'))) {
             throw new AppException(json_encode(['msg'=>'Já existe uma nota com este documento e fornecedor', 'id_nota'=>$verificar_existe[0]->ID]),325);
         }
 
@@ -535,7 +535,7 @@ class EstoqueMov extends Model
             $data_mov, $caixa_id,$turno, $pdv, $chave_nfe, $autorizacao_nfe,$serie,
             $pre_venda_id, $vendedor_id];
 
-        if($atualizar_itens) {
+        if ($atualizar_itens) {
             $estoque_mov_id = $dados_cadastrar_atualizar['id_estoque'];
 
             $this->deletar_bd1_estoque_mov(function($where) use ($estoque_mov_id){
@@ -550,7 +550,7 @@ class EstoqueMov extends Model
 
         try {
 
-            if($produtos_enviados) {
+            if ($produtos_enviados) {
                 for ($i = 0, $dados_qntd = count($dados_cadastrar_atualizar[$necessarios_itens[0]]); $i < $dados_qntd; $i++) {
                     $item = ($i + 1);
                     $produto_id = $dados_cadastrar_atualizar[$necessarios_itens[0]][$i];
@@ -612,7 +612,7 @@ class EstoqueMov extends Model
                     $regular++;
                 }
             }
-            if(!is_null($forma_pagto)) {
+            if (!is_null($forma_pagto)) {
 
                 $this->deletar_bd1_estoque_mov_pagto(function($where) use ($estoque_mov_id){
                     $where->where('estoque_mov_id', '=', $estoque_mov_id);
@@ -621,8 +621,8 @@ class EstoqueMov extends Model
                 foreach ($forma_pagto as $chave_pagto => $id_forma) {
                     $transacao = ((count($forma_pagto) - 1) == $chave_pagto) ? false : true;
 
-                    if(!is_null($valor_forma_pagto)){
-                        if(isset($valor_forma_pagto[$chave_pagto])) {
+                    if (!is_null($valor_forma_pagto)){
+                        if (isset($valor_forma_pagto[$chave_pagto])) {
                             $valor_pagto = is_array($valor_forma_pagto) ? $valor_forma_pagto[$chave_pagto] : $valor_forma_pagto;
                         } else {
                             $valor_pagto = $total_documento;
@@ -673,9 +673,9 @@ class EstoqueMov extends Model
         $this->loadModel('produto/produto');
         $model_produto = $this->model_produto_produto;
 
-        if(is_string($dados_json_xml_nota)) {
+        if (is_string($dados_json_xml_nota)) {
             $dados_json_xml_nota = json_decode($dados_json_xml_nota, true);
-            if(is_null($dados_json_xml_nota) OR !$dados_json_xml_nota) throw new AppException('JSON enviado não é válido', 321);
+            if (is_null($dados_json_xml_nota) OR !$dados_json_xml_nota) throw new AppException('JSON enviado não é válido', 321);
         } else {
             throw new AppException('JSON enviado não é válido', 321);
         }
@@ -683,7 +683,7 @@ class EstoqueMov extends Model
         $validar = ["cabecalho_nfe", "destinatario", "emitente", "produtos","rodape_nota"];
         Genericos::camposVazios((array) $dados_json_xml_nota, $validar,true);
 
-        if(!isset($dados_json_xml_nota["grades_produtos"])) {
+        if (!isset($dados_json_xml_nota["grades_produtos"])) {
             throw new AppException('Não foram passadas informações sobre as grades dos produtos', 1564, 401);
         }
 
@@ -764,7 +764,7 @@ class EstoqueMov extends Model
             $estoque_mov_id = $this->getUltimoEstoqueMovId() + 1;
             $verificar_estoque_mov_id = $this->setUsarException(false)->getEstoqueMovSalvosChaveNfe($chave_nfe,true);
 
-            if($verificar_estoque_mov_id != false) {
+            if ($verificar_estoque_mov_id != false) {
                 $estoque_mov_id = $verificar_estoque_mov_id;
                 $campos_estoque_mov[count($campos_estoque_mov)] = 'id';
                 $add_estoque_mov[count($add_estoque_mov)] = $estoque_mov_id;
@@ -828,7 +828,7 @@ class EstoqueMov extends Model
         $this->loadModel('nfe/nfe_core');
         $campo_buscar = 'id';
 
-        if($usar_chave != false) {
+        if ($usar_chave != false) {
             $campo_buscar = 'chave_nfe';
             $cnpj = $this->model_entidade_empresa->CNPJ;
 
@@ -844,8 +844,8 @@ class EstoqueMov extends Model
             $where->where($campo_buscar,'=', $nota_id);
         });
 
-        if(isset($arquivo)) {
-            if(file_exists($arquivo)) unlink($arquivo);
+        if (isset($arquivo)) {
+            if (file_exists($arquivo)) unlink($arquivo);
         }
 
         return 'Estoque mov '.$nota_id.' removida com sucesso';
@@ -868,11 +868,11 @@ class EstoqueMov extends Model
         $this->loadModel('nfe/nfe_core');
         $nfe_core = $this->model_nfe_nfe_core;
 
-        if(strlen($chave_nfe) != 44) return 322;
+        if (strlen($chave_nfe) != 44) return 322;
 
         $dir_xml = $nfe_core->getCaminhoArquivoChave($chave_nfe);
 
-        if(!$dir_xml) return 404;
+        if (!$dir_xml) return 404;
 
         $ler = $nfe_core->setLerXML($dir_xml);
         $ja_cadastrados[] = $this->getAnalisarNFeEnviada($ler);

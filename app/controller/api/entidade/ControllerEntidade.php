@@ -71,17 +71,17 @@ class ControllerEntidade extends Controller
         $modelUsar = $this->model_entidades;
         $getEntidadePorCnpjMetodo = 'getEntidadeCnpj';
 
-        if($tipoEntidde == 1) {
+        if ($tipoEntidde == 1) {
             $modelUsar = $this->model_cliente;
             $getEntidadePorCnpjMetodo = 'getClienteCpfCnpj';
         }
 
-        if($tipoEntidde == 2) {
+        if ($tipoEntidde == 2) {
             $modelUsar = $this->model_fornecedor;
             $getEntidadePorCnpjMetodo = 'getFornecedorCnpj';
         }
 
-        if(!is_bool($modelUsar->setFalseException(true)->$getEntidadePorCnpjMetodo($dados_entidade['CNPJ'])))
+        if (!is_bool($modelUsar->setFalseException(true)->$getEntidadePorCnpjMetodo($dados_entidade['CNPJ'])))
             throw new AppException('A entidade '.$dados_entidade['xNome'].' já esá cadastrada');
 
         $fornecedor_add = [

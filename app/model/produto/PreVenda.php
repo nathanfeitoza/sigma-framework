@@ -25,7 +25,7 @@ class PreVenda extends Model
         $campo_buscar = 'id';
         $valor = $produto_pre_venda_item;
 
-        if($produto_pre_venda_id == false) {
+        if ($produto_pre_venda_id == false) {
             $campo_buscar = 'produto_pre_venda_id';
             $valor = $produto_pre_venda_id;
         }
@@ -33,7 +33,7 @@ class PreVenda extends Model
         $dados = $this->db()->tabela(Genericos::getSchema().'produto_pre_venda_item')
                 ->where($campo_buscar,'=',$valor);
 
-        if($produto_pre_venda_item != false && $produto_pre_venda_id != false) {
+        if ($produto_pre_venda_item != false && $produto_pre_venda_id != false) {
             $dados->whereAnd('produto_pre_venda_id','=',$produto_pre_venda_id);
         }
 
@@ -46,7 +46,7 @@ class PreVenda extends Model
         $campo_buscar = 'id';
         $valor = $produto_pre_venda_pagto;
 
-        if($produto_pre_venda_id == false) {
+        if ($produto_pre_venda_id == false) {
             $campo_buscar = 'produto_pre_venda_id';
             $valor = $produto_pre_venda_id;
         }
@@ -54,7 +54,7 @@ class PreVenda extends Model
         $dados = $this->db()->tabela(Genericos::getSchema().'produto_pre_venda_pagto')
                 ->where($campo_buscar,'=',$valor);
 
-        if($produto_pre_venda_pagto != false && $produto_pre_venda_id != false) {
+        if ($produto_pre_venda_pagto != false && $produto_pre_venda_id != false) {
             $dados->whereAnd('produto_pre_venda_id','=',$produto_pre_venda_id);
         }
 
@@ -80,7 +80,7 @@ class PreVenda extends Model
     {
         $tipos_aceitos = [3,4];
 
-        if(!in_array($tipo_pedido, $tipos_aceitos)) throw new AppException('Tipo de pedido não aceito',315);
+        if (!in_array($tipo_pedido, $tipos_aceitos)) throw new AppException('Tipo de pedido não aceito',315);
 
         $campos_cabec = ['a.comanda as documento','a.data as saida','a.tipo','b.nome as nome_cliente_destin','b.fantasia',
             'b.cnpj as cpf_cnpj','b.cep','b.logradouro as endereco','b.numero','b.email',
@@ -98,7 +98,7 @@ class PreVenda extends Model
             ->leftJoin('entidade b','b.id = a.entidade_id')
             ->buildQuery('select');
 
-        if(is_int($cabec) || is_bool($cabec)) return 0;
+        if (is_int($cabec) || is_bool($cabec)) return 0;
 
         $cabec[0]->PAGTO = $this->db()->tabela(Genericos::getSchema().'produto_pre_venda_pagto')
             ->campos(['id','forma_pagto_id','valor'])
@@ -106,7 +106,7 @@ class PreVenda extends Model
             ->orderBy('id','asc')
             ->buildQUery('select');
 
-        if(is_int($cabec[0]) || is_bool($cabec[0])) return -1;
+        if (is_int($cabec[0]) || is_bool($cabec[0])) return -1;
 
         $produtos = $this->db()->tabela(Genericos::getSchema().'produto_pre_venda_item c')
             ->campos($campos_produtos)
@@ -117,14 +117,14 @@ class PreVenda extends Model
             ->orderBy('c.id','asc')
             ->buildQuery('select');
 
-        if(is_int($produtos) || is_bool($produtos)) return -2;
+        if (is_int($produtos) || is_bool($produtos)) return -2;
 
         $this->loadModel('produto/produto');
 
         $produtos_class = $this->model_produto_produto;
 
         foreach($produtos as $chave => $produto) {
-            if(!is_null($produto->GRADE)){
+            if (!is_null($produto->GRADE)){
                 $produto->GRADE = $produtos_class->setUsarException(false)->getProdutoGrade($produto->GRADE, true);
             } else {
                 unset($produto->GRADE);
@@ -208,9 +208,9 @@ class PreVenda extends Model
 
         $cpf_cnpj = preg_replace("/[^\d]/", "", $cpf_cnpj);
 
-        if(isset($dados_salvar[$opc_itens[0]]) && !isset($dados_salvar['pedido_id'])) Genericos::camposVazios($dados_salvar, $opc_itens, true);
+        if (isset($dados_salvar[$opc_itens[0]]) && !isset($dados_salvar['pedido_id'])) Genericos::camposVazios($dados_salvar, $opc_itens, true);
 
-        if(isset($dados_salvar[$opc_itens[0]])) {
+        if (isset($dados_salvar[$opc_itens[0]])) {
             $codigos_item = $dados_salvar[$opc_itens[0]];
             $precos_item = $dados_salvar[$opc_itens[1]];
             $quants_item = $dados_salvar[$opc_itens[2]];
@@ -270,7 +270,7 @@ class PreVenda extends Model
         $adicionar_pre->iniciarTransacao();
 
 
-        if(!Genericos::verificarCampoPreenchido($dados_salvar, 'pedido_id')) {
+        if (!Genericos::verificarCampoPreenchido($dados_salvar, 'pedido_id')) {
             $this->inserir_bd1_produto_pre_venda($campos_adicionar_pre, $valores_campos_adicionar_pre);
             $id_ultima_pre = $this->getUltimoIdPrevenda();
         } else {
@@ -285,7 +285,7 @@ class PreVenda extends Model
         $retorno = ["PEDIDO_REGISTRADO" => $id_ultima_pre];
 
         // Para cancelar (excluir) itens da pré-venda (pedido compra/venda)
-        if(Genericos::verificarCampoPreenchido($dados_salvar, 'cancelar')) {
+        if (Genericos::verificarCampoPreenchido($dados_salvar, 'cancelar')) {
             foreach($dados_salvar['cancelar'] as $chave_cancelar => $prods_cancelar) {
                 $this->cancelarItemPreVenda($prods_cancelar);
             }
@@ -295,7 +295,7 @@ class PreVenda extends Model
         $desconto_total_itens = 0;
         $acrescimo_total_itens = 0;
 
-        if(isset($dados_salvar[$opc_itens[0]])) {
+        if (isset($dados_salvar[$opc_itens[0]])) {
             try {
                 //$obj_adicionar_pre_sec = $this->getConBD()->setLogandoComplexo();
                 //$adicionar_pre_sec = $this->setObjetoBuildquery($obj_adicionar_pre_sec)->setEmTransacao();
@@ -312,7 +312,7 @@ class PreVenda extends Model
 
                         $desconto_total_itens_usar = $desconto_total_itens;
 
-                        if($chave_item != (count($codigos_item) - 1)) {
+                        if ($chave_item != (count($codigos_item) - 1)) {
                             $desconto_item = round((($total_item * $descontos) / $total_pedido), 2);
                             $acrescimo_item = round((($total_item * $acrescimos) / $total_pedido), 2);
 
@@ -337,13 +337,13 @@ class PreVenda extends Model
 
                         $cod_item_att = false;
 
-                        if(isset($dados_salvar['cod_item'])) {
-                            if(isset($dados_salvar['cod_item'][$chave_item])) {
+                        if (isset($dados_salvar['cod_item'])) {
+                            if (isset($dados_salvar['cod_item'][$chave_item])) {
                                 $cod_item_att = $dados_salvar['cod_item'][$chave_item];
                             }
                         }
 
-                        if(!$cod_item_att) {
+                        if (!$cod_item_att) {
                             $this->inserir_bd1_produto_pre_venda_item($campos_adicionar_pre_item, $valores_campos_adicionar_pre);
                         } else {
                             $this->atualizar_bd1_produto_pre_venda_item($campos_adicionar_pre_item, $valores_campos_adicionar_pre,
@@ -359,7 +359,7 @@ class PreVenda extends Model
                 $valor_pagto = $valor_pagto < 0 ? ($valor_pagto + $acrescimos) : $valor_pagto;
 
                 foreach ($forma_pagto as $chave_pagto => $id_pagto) {
-                    if(Genericos::verificarCampoPreenchido($dados_salvar, 'valor_forma_pagto')) {
+                    if (Genericos::verificarCampoPreenchido($dados_salvar, 'valor_forma_pagto')) {
                         $valor_forma_pagto = isset($dados_salvar['valor_forma_pagto'][$chave_pagto]) ? $dados_salvar['valor_forma_pagto'][$chave_pagto] : $valor_pagto;
                     }
 
@@ -410,7 +410,7 @@ class PreVenda extends Model
             'acrescimo_total','usuario_id','vendedor_id','pdv', 'produto_id','total_produto',
             'forma_pagamento_id','valor']);
 
-        /--if($dados_para_insercao['pre_venda_id'] != 0) {
+        /--if ($dados_para_insercao['pre_venda_id'] != 0) {
 
             $verificar_pre_venda = $this->container->model->getConBD()
                 ->tabela($this->getSchema().'produto_pre_venda')
@@ -523,13 +523,13 @@ class PreVenda extends Model
         }
         $troco2 = $valor_pago_check - $novo_valor;
         $liberar_recebimento = true;
-        if($troco < 0) {
+        if ($troco < 0) {
             $liberar_recebimento = false;
-        } elseif($troco2 < 0) {
+        } elseif ($troco2 < 0) {
             $liberar_recebimento = false;
             $troco = $troco2;
         }
-        if($liberar_recebimento) {
+        if ($liberar_recebimento) {
             $txt_cabecalho .= '<div style="text-align:center;"><strong>Nathan</strong><br>';
             $txt_cabecalho .= ' <div style="font-size: 12px"> 07684607000187 Inscrição Estadual: 271190221<br>';
             $txt_cabecalho .= '  RUA SANTA TEREZINHA 157 Bairro: PONTO NOVO<br>';
@@ -762,9 +762,9 @@ class PreVenda extends Model
                 ->setGerarLog(true)
                 ->buildQuery('select');
 
-        if($pedido == false) return false;
+        if ($pedido == false) return false;
 
-        if($trazerItensEPagamentos) {
+        if ($trazerItensEPagamentos) {
             $dadosItens = $this->setFalseException(true)->db()
                 ->tabela(Genericos::getSchema().'produto_pre_venda_item a')
                 ->campos(['a.*', 'a.quantidade * a.preco_venda as total','b.nome'])
@@ -808,7 +808,7 @@ class PreVenda extends Model
 
         $necessarios_pre_venda = ['vendedor_id','comanda_mesa'];
 
-        if($cabecalho_pre['modo_operacao'] != 'PDV') {
+        if ($cabecalho_pre['modo_operacao'] != 'PDV') {
             Genericos::camposVazios($cabecalho_pre, $necessarios_pre_venda, true);
         }
 
@@ -819,11 +819,11 @@ class PreVenda extends Model
         $necessarios_produtos = ['id','preco_venda','quantidade',/*'grade_id',*/];
         $necessarios_pagamento = ['forma_pagto_id','valor'];
 
-        if(@empty($cabecalho_pre['vendedor_id'])) {
+        if (@empty($cabecalho_pre['vendedor_id'])) {
             $cabecalho_pre['vendedor_id'] = $cabecalho_pre['caixa_id'];
         }
 
-        if(@empty($cabecalho_pre['comanda_mesa'])) {
+        if (@empty($cabecalho_pre['comanda_mesa'])) {
             $cabecalho_pre['comanda_mesa'] = 0;
         }
 
@@ -846,7 +846,7 @@ class PreVenda extends Model
             'vendedor_id' => $cabecalho_pre['vendedor_id'],
         ];
 
-        if(Genericos::verificarCampoPreenchido($cabecalho_pre, 'pre_venda_id') && !in_array($cabecalho_pre['modo_operacao'], $sempre_gerar_novo_id) ) {
+        if (Genericos::verificarCampoPreenchido($cabecalho_pre, 'pre_venda_id') && !in_array($cabecalho_pre['modo_operacao'], $sempre_gerar_novo_id) ) {
             $pre_venda_id = $cabecalho_pre['pre_venda_id'];
 
             $gravar_pre_venda['id'] = $pre_venda_id;
@@ -858,9 +858,9 @@ class PreVenda extends Model
 
         $this->inserir_bd1_produto_pre_venda(array_keys($gravar_pre_venda), array_values($gravar_pre_venda));
 
-        if(!isset($pre_venda_id)) {
+        if (!isset($pre_venda_id)) {
 
-            if(!in_array($cabecalho_pre['modo_operacao'], $sempre_gerar_novo_id)) {
+            if (!in_array($cabecalho_pre['modo_operacao'], $sempre_gerar_novo_id)) {
                 $pre_venda_id = $gravar->tabela(Genericos::getSchema() . 'produto_pre_venda')
                     ->campos(['id'])
                     ->where('comanda', '=', $cabecalho_pre['comanda_mesa'])
@@ -913,7 +913,7 @@ class PreVenda extends Model
 
         $verificarPreVenda = $this->setFalseException(true)->getPreVenda($produto_pre_venda_id);
 
-        if(!$verificarPreVenda) {
+        if (!$verificarPreVenda) {
             throw new AppException('O pedido solicitado a ser pago não existe', 10580);
         }
 
@@ -943,7 +943,7 @@ class PreVenda extends Model
             $this->inserir_bd1_produto_pre_venda_pagto(array_keys($dados_pagamento), array_values($dados_pagamento));
         }
 
-        if($novoTotal > $totalPago) {
+        if ($novoTotal > $totalPago) {
             $conBd->rollback();
 
             throw new AppException('O valor pago de R$ '.number_format($totalPago,2,',','.').' não é suficiente para o valor total de R$ '.number_format($novoTotal,2,',','.'),10581);

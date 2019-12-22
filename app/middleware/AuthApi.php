@@ -37,7 +37,7 @@ class AuthApi extends Model
         preg_match('/\/token$/i', $request->getUri()->getPath(), $isToken);
         $isToken = count($isToken) > 0;
         
-        if(!$isToken) $this->validarApi();
+        if (!$isToken) $this->validarApi();
 
         //$response->getBody()->write('BEFORE');
         $response = $next($request, $response);
@@ -58,29 +58,29 @@ class AuthApi extends Model
                 break;
         }
 
-        if(!$verificarBearer && $this->requerLoginSenha) {
+        if (!$verificarBearer && $this->requerLoginSenha) {
             $necessariosHeaders[] = 'HTTP_LOGIN';
             $necessariosHeaders[] = 'HTTP_PASSWORD';
             $necessariosParametros[] = 'login';
             $necessariosParametros[] = 'password';
         }
 
-        if($verificarBearer) $necessariosHeaders[] = 'HTTP_BEARER';
+        if ($verificarBearer) $necessariosHeaders[] = 'HTTP_BEARER';
         
         $headers = $this->request->getHeaders();
         $verificarHeaders = Genericos::camposVazios($headers, $necessariosHeaders);
         $erro = false;
 
-        if(is_string($verificarHeaders)) $erro = ['erro' => 'header', 'msg' => $verificarHeaders]; 
+        if (is_string($verificarHeaders)) $erro = ['erro' => 'header', 'msg' => $verificarHeaders]; 
 
-        if(!is_null($params)) {
+        if (!is_null($params)) {
             $erro = false;
             $verificarParams = Genericos::camposVazios($params, $necessariosParametros);
             
-            if(is_string($necessariosParametros)) $erro = ['erro' => 'header', 'msg' => $verificarParams];
+            if (is_string($necessariosParametros)) $erro = ['erro' => 'header', 'msg' => $verificarParams];
         }
 
-        if(is_array($erro)) return $erro;
+        if (is_array($erro)) return $erro;
 
         return true;
     }
@@ -94,7 +94,7 @@ class AuthApi extends Model
     {
         $validacao = $this->validarHeaderAutenticadores(false, $params);
 
-        if(!is_bool($validacao)) {
+        if (!is_bool($validacao)) {
             throw new AppException($validacao['msg'], 46114);
         }
 

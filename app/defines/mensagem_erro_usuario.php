@@ -81,7 +81,7 @@ $mensagensDefault = [
 
 $mensagensIgualar = $mensagensDefault;
 
-if(isset($mensagens)) {
+if (isset($mensagens)) {
     $mensagensIgualar = array_merge($mensagensDefault, $mensagens);
 }
 

@@ -2,17 +2,6 @@
 defines/
 .idea/
 .idea
-backend/.idea
-backend/InfoAapi-webapps.code-workspacePI/.git
-backend/InfoAPI/.idea
-backend/InfoAPI/.vscode
-backend/InfoAPI/Ocultar
-backend/InfoAPI/.git
-backend/ApiMicro/.idea
-backend/ApiMicro/.vscode
-backend/ApiMicro/Ocultar
-backend/api_app/.idea
-backend/composer.lock
 node_modules/
 package-lock.json
 sync.sh

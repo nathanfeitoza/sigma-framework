@@ -63,7 +63,7 @@ class ControleFinanceiro extends Model
 
         $data_periodo = is_array($data_periodo) ? $data_periodo : [$data_periodo];
 
-        if(count($data_periodo) == 1) $data_periodo[1] = $data_periodo[0];
+        if (count($data_periodo) == 1) $data_periodo[1] = $data_periodo[0];
 
         /*
          * 0 -> Controlefinanceiro a pagar
@@ -97,7 +97,7 @@ class ControleFinanceiro extends Model
 
         $tipo = 'vencimento';
 
-        if((int) $tipo_busca == 2) $tipo = 'emissao';
+        if ((int) $tipo_busca == 2) $tipo = 'emissao';
         elseif ((int) $tipo_busca == 3) $tipo = 'data_baixa';
 
         $campos = ['id', 'documento', 'emissao', 'vencimento', 'valor','valor_liquido','lote','valor_restante'];
@@ -133,7 +133,7 @@ class ControleFinanceiro extends Model
     {
         $campos_retornar = ['id', 'ENTIDADE_ID', 'documento', 'emissao', 'vencimento', 'valor','tipo_controle'];
 
-        if($completo != false) {
+        if ($completo != false) {
             $campos_retornar = ['*'];
         }
 
@@ -214,7 +214,7 @@ class ControleFinanceiro extends Model
             $valores_att = [$pagamento_atualizar, $valor_tarifa_item, $valor_multa_item, $descontos,
                 $acrescimos,$valor_recebido_item];
 
-            if(!$liquidacao) {
+            if (!$liquidacao) {
                 $campos_att[0] = 'obs';
                 $valores_att[0] = $status_item;
             }
@@ -225,7 +225,7 @@ class ControleFinanceiro extends Model
                 ->where('id','=',$nosso_numero_item)
                 ->buildQuery('update');
 
-            if($bd->getLinhasAfetadas() == 0) {
+            if ($bd->getLinhasAfetadas() == 0) {
                 $erro[] = $nosso_numero_item;
             } else {
                 $atualizar = $bd->tabela(Genericos::getSchema().'controle_financeiro_pagto')

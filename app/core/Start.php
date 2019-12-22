@@ -35,9 +35,9 @@ class Start extends Controller
         preg_match('/^\/api\/{1}/', $argsRequest, $isApi);
         $isApi = count($isApi) != 0;
 
-        if(strlen($argsRequest) > 1 && Configuracoes::get('USANDO_HISTORY_JS') && !$isApi) {
+        if (strlen($argsRequest) > 1 && Configuracoes::get('USANDO_HISTORY_JS') && !$isApi) {
             $verificarSeTemNoTema = Genericos::getTemaDir().DIRECTORY_SEPARATOR.$argsRequest;
-            if(file_exists($verificarSeTemNoTema)) {
+            if (file_exists($verificarSeTemNoTema)) {
                 $extensoes_ignorar = ['twig','html'];
                 $info = finfo_open(FILEINFO_MIME_TYPE);     
                 $mime_type = finfo_file($info, $verificarSeTemNoTema);
@@ -52,7 +52,7 @@ class Start extends Controller
                     default:
                     break;
                 }
-                if(!in_array($extensao, $extensoes_ignorar)) {
+                if (!in_array($extensao, $extensoes_ignorar)) {
                     header('Content-Type: ' . $mime_type);
                     echo file_get_contents($verificarSeTemNoTema);
                     exit;
@@ -64,7 +64,7 @@ class Start extends Controller
         
         $argsRequest = preg_replace('/\?(.*)?/', '', $argsRequest);
 
-        if($removerArgs != '/') {
+        if ($removerArgs != '/') {
             $argsRequest = str_replace($removerArgs, '', $argsRequest);
         }
         
@@ -76,10 +76,10 @@ class Start extends Controller
         $classe = $this->getClassMethodArguments($argsRequest);
         $classe = $classe[0];
 
-        if(class_exists($classe)) {
+        if (class_exists($classe)) {
             $classe = new $classe;
             
-            if(method_exists($classe, self::METHOD_MIDDLEWARES)) {
+            if (method_exists($classe, self::METHOD_MIDDLEWARES)) {
                 
                 $metodo = self::METHOD_MIDDLEWARES;
                 $middlewares = $classe->$metodo();
@@ -106,7 +106,7 @@ class Start extends Controller
         $countArgs = count($args);
         $isApi = false;
         
-        if(isset($args[0])) $isApi = strtolower($args[0]) == 'api';
+        if (isset($args[0])) $isApi = strtolower($args[0]) == 'api';
 
         $isExtensao = preg_grep( "/extensao/i" , $args);
         
@@ -121,12 +121,12 @@ class Start extends Controller
 
         $namespaceUsar = $isApi ? $namespaceApi : $namespaceUi;
 
-        if($isApi) {
+        if ($isApi) {
             unset($args[0]);
             $args = array_values($args);
         }
 
-        if(count($args) > 1) {
+        if (count($args) > 1) {
             $namespaceUsar .= $args[0].'\\';
             $classe = isset($args[1]) ? $args[1] : 'Index';
             $method = isset($args[2]) ? $args[2] : 'index';
@@ -136,7 +136,7 @@ class Start extends Controller
             $method = isset($args[0]) ? $args[0] : 'index';
         }
 
-        if(!$isApi && Configuracoes::get('USANDO_HISTORY_JS')) {
+        if (!$isApi && Configuracoes::get('USANDO_HISTORY_JS')) {
             $namespaceUsar = $namespaceUi.'index\\';
             $classe = 'Index';
             $method = 'index';
@@ -151,7 +151,7 @@ class Start extends Controller
     public function controller($request, $response, $args)
     {
         header('Access-Control-Allow-Methods: PUT, POST, GET, DELETE, OPTIONS');
-        if($request->getMethod() == 'OPTIONS') return true;
+        if ($request->getMethod() == 'OPTIONS') return true;
 
         $this->setArgs($args);
         $args = $this->getArgs();
@@ -187,16 +187,22 @@ class Start extends Controller
             $this->setParams($params);
 
             return $this->exec($classe, $method, $metodoHttpPadrao);
+
         } catch (AppException $e) {
-            $message = method_exists($e, 'getMsgUsuario') ? $e->getMsgUsuario() : $e->getMessage();
+            $message = method_exists($e, 'getMsgUsuario') 
+                ? $e->getMsgUsuario() 
+                : $e->getMessage();
+
             $code = $e->getCode();
             $codeHttp = method_exists($e, 'getCodeHttp') ? $e->getCodeHttp() : 500;
+            
             $this->setCodHttp($codeHttp);
             
-            if($isApi) {
+            if ($isApi) {
                 $this->setOutputJson($message, true, false, $code);
+
             } else {
-                $this->setOutputPage('error',['msg' => $message, 'cod' => $code]);
+                $this->setOutputPage('error', ['msg' => $message, 'cod' => $code]);
             }
 
             return $this->getOutput();
@@ -204,8 +210,12 @@ class Start extends Controller
 
     }
 
-    private function exec($class, $method, $metodosAceitosHttp = false)
-    {
+    private function exec(
+        $class, 
+        $method, 
+        $metodosAceitosHttp = false
+    ) {
+        
         $method_old = $method;
         $namespace = explode('\\',$class);
         $classViraMethod = str_replace(Configuracoes::get('CONTROLLER'),'',end($namespace));
@@ -215,8 +225,8 @@ class Start extends Controller
         $classIndex = $namespace.'\\'.Configuracoes::get('CONTROLLER').'Index';
         $params = $this->getParams();
 
-        if(!class_exists($class)) {
-            if(method_exists($classIndex, $classViraMethod)) {
+        if (!class_exists($class)) {
+            if (method_exists($classIndex, $classViraMethod)) {
                 $class = $classIndex;
                 $method = $classViraMethod;
                 $offset = $isApi ? 2 : 1;
@@ -233,14 +243,14 @@ class Start extends Controller
 
         $msgNotFound = 'Método '.$method.' inexistente';
 
-        if(!method_exists($class, $method)) {
+        if (!method_exists($class, $method)) {
             $erro = true;
 
-            if(class_exists($methodComoClass)) {
+            if (class_exists($methodComoClass)) {
                 $class = new $methodComoClass($this->getContainer());
                 $method = 'index';
 
-                if(method_exists($class, $method)) $erro = false;
+                if (method_exists($class, $method)) $erro = false;
 
             } else {
                 $method_old = strtolower($method_old);
@@ -248,28 +258,28 @@ class Start extends Controller
                 $namespace .= $method_old.'\\';
                 $classe = $namespace.Configuracoes::get('CONTROLLER').'Index';
 
-                if(class_exists($classe)) {
+                if (class_exists($classe)) {
                     $class = new $classe($this->getContainer());
                     $method = 'index';
 
-                    if(method_exists($class, $method)) $erro = false;
+                    if (method_exists($class, $method)) $erro = false;
                 }
             }
 
-            if($erro) throw new AppException($msgNotFound, 1001, 403);
+            if ($erro) throw new AppException($msgNotFound, 1001, 403);
         }
 
         $reflection = new \ReflectionMethod($class, $method);
 
-        if(!$reflection->isPublic()) {
+        if (!$reflection->isPublic()) {
             throw new AppException($msgNotFound, 1006, 403);
         }
 
         $paramsMethod = $reflection->getParameters();
 
-        if(count($paramsMethod) != 0) {
+        if (count($paramsMethod) != 0) {
             foreach ($paramsMethod as $paramM) {
-                if(!$paramM->isOptional()) throw new AppException('O método '.$method.' acessado é destinado para eventos, portanto não é possível acessá-lo via HTTP',1031, 404,'Rota não encontrada');
+                if (!$paramM->isOptional()) throw new AppException('O método '.$method.' acessado é destinado para eventos, portanto não é possível acessá-lo via HTTP',1031, 404,'Rota não encontrada');
             }
         }
 
@@ -278,7 +288,7 @@ class Start extends Controller
 
         $checkNaoAcessar = preg_grep('/'.$method.'/i', $naoAcessar);
 
-        if(count($checkNaoAcessar) != 0) {
+        if (count($checkNaoAcessar) != 0) {
             throw new AppException($msgNotFound, 1013);
         }
 
@@ -287,13 +297,13 @@ class Start extends Controller
         $class->setArgs($this->getArgs());
         $class->setParams($params);
 
-        if($metodosAceitosHttp != false) $class->setMethodsAceitos($metodosAceitosHttp);
+        if ($metodosAceitosHttp != false) $class->setMethodsAceitos($metodosAceitosHttp);
 
         $class->setTipoAcessoApi($this->tipoAcessoApi);
         
         $class->$method();
         
-        if($class->getAcessoExterno() && $isApi) {
+        if ($class->getAcessoExterno() && $isApi) {
             header('Access-Control-Allow-Origin: *');
             header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
         }

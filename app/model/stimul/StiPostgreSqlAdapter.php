@@ -101,7 +101,7 @@ class StiPostgreSqlAdapter extends Stimul
     public function execute($queryString, $parametros=false) {
         $queryString = preg_replace("/(insert|delete|drop table|show tables|;|#|\|--|\\\\)/", "", $queryString);
         preg_match("/^select/i", $queryString, $validar);
-        if(count($validar) == 0) {
+        if (count($validar) == 0) {
             throw new AppException('Instrução não permitida', 310);
         }
         $con = $this->db()
@@ -114,7 +114,7 @@ class StiPostgreSqlAdapter extends Stimul
         foreach ($con as $key => $value) {
             $row = [];
             foreach ($con[$key] as $chave => $valor) {
-                if($count == 0) {
+                if ($count == 0) {
                     $result->columns[] = strtolower($chave);
                 }
                 $row[] = $valor;
