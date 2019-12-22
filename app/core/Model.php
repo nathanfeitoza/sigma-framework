@@ -17,10 +17,13 @@ abstract class Model
     use ControllerModelTrait;
 
     private $db;
-    protected $usarException = true, $msgNaoEncontrado = false, $falseException = false;
+    protected $usarException = true;
+    protected $msgNaoEncontrado = false;
+    protected $falseException = false;
     protected $alias = false;
     protected $campos_retornar = ['*'];
-    protected $pagina = 1, $max_por_pag = 30;
+    protected $pagina = 1;
+    protected $max_por_pag = 30;
 
     public function __construct()
     {
@@ -44,11 +47,13 @@ abstract class Model
             $bancoConfig ['PASS'],
             $opcoes
         );
+
         return $this->db;
     }
 
     public function setObjDb(BD $db) {
         $this->db = $db;
+
         return $this;
     }
 
@@ -86,6 +91,7 @@ abstract class Model
     public function getAliasCampo()
     {
         $alias = $this->getAliasTabela();
+
         return (strlen($alias) > 0) ? $alias.'.' : '';
     }
 
@@ -203,7 +209,10 @@ abstract class Model
      */
     public function setMaxPorPag($max_por_pag)
     {
-        $this->max_por_pag = is_numeric($max_por_pag) ? (int) $max_por_pag : $this->max_por_pag;
+        $this->max_por_pag = is_numeric($max_por_pag) 
+            ? (int) $max_por_pag 
+            : $this->max_por_pag;
+
         return $this;
     }
 
@@ -233,8 +242,11 @@ abstract class Model
      * @return BD|array|bool|mixed
      * @throws errors\AppException
      */
-    public function getDadosPaginadosGenerico($tabela_view, $callback = false, $where = false)
-    {
+    public function getDadosPaginadosGenerico(
+        $tabela_view, 
+        $callback = false, 
+        $where = false
+    ) {
         $pagina = $this->pagina;
         $max_por_pagina = $this->max_por_pag;
 
@@ -346,8 +358,13 @@ abstract class Model
         },(array) $campos);
     }
 
-    private function factoryCrud($tipo, $tabela, $campos=false, $valores=false, $where = false)
-    {
+    private function factoryCrud(
+        $tipo, 
+        $tabela, 
+        $campos = false, 
+        $valores = false, 
+        $where = false
+    ) {
         $obj_bd = $this->db()->tabela($tabela);
 
         if ($valores != false) $obj_bd->campos($campos, $valores);
@@ -368,8 +385,11 @@ abstract class Model
         return $this->db();
     }
 
-    protected final function filtrarCamposCrud(Array $filtrar, Array $campos_input, $usar_keys = true)
-    {
+    protected final function filtrarCamposCrud(
+        Array $filtrar, 
+        Array $campos_input, 
+        $usar_keys = true
+    ) {
         if ($filtrar[0] == '*') return $filtrar;
 
         return array_filter($campos_input, function($valor) use ($filtrar) {
@@ -459,24 +479,55 @@ abstract class Model
         return $objBd;
     }
 
-    protected final function atualizarTabela($tabela, $campos, $valores, $where=false)
-    {
-        return $this->factoryCrud('update',$tabela,$campos, $valores, $where);
+    protected final function atualizarTabela(
+        $tabela, 
+        $campos, 
+        $valores, 
+        $where = false
+    ) {
+        return $this->factoryCrud(
+            'update',
+            $tabela,
+            $campos, 
+            $valores, 
+            $where
+        );
     }
 
-    protected final function inserirTabela($tabela, $campos, $valores)
-    {
-        return $this->factoryCrud('insert', $tabela, $campos, $valores);
+    protected final function inserirTabela(
+        $tabela, 
+        $campos, 
+        $valores
+    ) {
+
+        return $this->factoryCrud(
+            'insert', 
+            $tabela, 
+            $campos, 
+            $valores
+        );
     }
 
     protected final function deletarTabela($tabela, $where = false)
     {
-        return $this->factoryCrud('delete', $tabela, false, false, $where);
+        return $this->factoryCrud(
+            'delete', 
+            $tabela, 
+            false, 
+            false, 
+            $where
+        );
     }
 
     protected final function listarTabela($tabela, $where = false)
     {
-        return $this->factoryCrud('select', $tabela, $this->getCamposRetornar(), false, $where);
+        return $this->factoryCrud(
+            'select', 
+            $tabela, 
+            $this->getCamposRetornar(), 
+            false, 
+            $where
+        );
     }
 
     public function __call($call, $arguments)
@@ -535,10 +586,11 @@ abstract class Model
                 if (!($this->getCamposRetornar() == ['*'])) {
                     $camposTabela = $this->getCamposTabela($tabela, $schema);
                     $campos_retornar = $this->filtrarCamposCrud(
-                                        $camposTabela, 
-                                        $this->getCamposRetornar(), 
-                                        false
-                                    );
+                        $camposTabela, 
+                        $this->getCamposRetornar(), 
+                        false
+                    );
+
                     $this->setCamposRetornar($campos_retornar);
                 }
 
@@ -551,5 +603,4 @@ abstract class Model
             throw new AppException('Método '.$call.' não encontrado', 40035);
         }
     }
-
 }
