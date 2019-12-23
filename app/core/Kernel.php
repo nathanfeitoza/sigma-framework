@@ -12,7 +12,7 @@ use AppCore\errors\AppException;
 use \Slim\App;
 
 
-class Start extends Controller
+class Kernel extends Controller
 {
     CONST METHOD_MIDDLEWARES = 'middleware';
 
@@ -20,7 +20,7 @@ class Start extends Controller
     {
         $engine = new Engine();
         $engine->initContainers();
-        $callable = !$callable ? Start::class.':controller' : $callable;
+        $callable = !$callable ? Kernel::class.':controller' : $callable;
         $slim = new App($engine->getContainer());
         $slim = $this->addMidllewares($slim);
 

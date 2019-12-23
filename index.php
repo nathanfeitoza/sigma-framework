@@ -6,8 +6,8 @@
  * @Last Modified time: 2019-03-28 09:18:10
  */
 
-use \AppCore\Start;
 use \AppCore\Configuracoes;
+use AppCore\Kernel;
 
 $pastaDefines = 'defines';
 
@@ -32,5 +32,5 @@ require __DIR__.'/app/externo/composer/autoload.php';
 
 if(@Configuracoes::get('DEBUG') != true) error_reporting(0);
 
-$iniciar = new Start();
+$iniciar = new Kernel();
 $iniciar->run();

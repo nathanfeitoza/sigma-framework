@@ -1,7 +1,7 @@
 <?php
 
 $configDefault = [
-    'ROOTDIR' => rtrim(str_replace('index.php','',$_SERVER['SCRIPT_FILENAME'])),
+    'ROOTDIR' => rtrim(str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME'])),
     'TEMA' => 'default',
     'NOME_LOG' => 'AppLog',
     'CONTROLLER' => 'Controller',
@@ -9,6 +9,7 @@ $configDefault = [
     'TEMPO_EXPIRA_TOKEN' => 7200,
     'DEBUG' => false,
     'USANDO_HISTORY_JS' => false,
+    'DEFAULT_TIME_ZONE' => 'America/Bahia',
     'BANCO_DADOS' => [
         'TYPE' => '',
         'HOST' => '',
@@ -30,3 +31,5 @@ if (isset($config)) {
 }
 
 $config = $configIgualar;
+
+define('VERSION', '0.0.1');
