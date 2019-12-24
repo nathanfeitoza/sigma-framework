@@ -10,6 +10,8 @@
 
 <script>
 
+import moment from 'moment';
+
 import Crud from '../../components/Crud'
 import Produto from './Produto'
 
@@ -43,11 +45,22 @@ export default {
         senha: {
           label: 'Senha',
           tipoCampo: 'password'
+        },
+        data_cad: {
+          label: 'Data Cadastro',
+          type: 'datepicker',
+          tipoCampo: "datepicker",
+          funcaoExecField(valor) {
+            return moment(valor).format("DD/MM/YYYY");
+          },
+          funcaoExec(valor) {
+            return moment(valor).format("DD/MM/YYYY");
+          }
         }
       },
       opcoes: {
-        edicaoInline: true,
-        rotaParaEditar: '/teste/testar'
+        edicaoInline: false,
+        rotaParaEditar: '/produto/{id}/editar'
       }
     }
   },
@@ -55,11 +68,11 @@ export default {
     
   },
   routerChildren: [{
-        path: '/produto/:id/:criar_editar(editar|criar)?',
+        path: '/produto/:id/:criar_editar_visualizar(editar|criar|visualizar)?',
         name: 'produto',
         component: Produto, //Produto
         meta: {
-          algo: 'meu pintooooooo'
+          editando: 'meu pintooooooo'
         },
         //props: true
   }],

@@ -24,7 +24,7 @@ class Teste extends Model
 
     public function atualizar($atualizar)
     {
-        $pegar = ['nome','email','senha'];
+        $pegar = ['nome','email','senha','data_cad'];
         
         Genericos::verificarCampoPreenchido($atualizar, 'id', true);
 

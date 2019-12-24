@@ -151,7 +151,11 @@ class Kernel extends Controller
     public function controller($request, $response, $args)
     {
         header('Access-Control-Allow-Methods: PUT, POST, GET, DELETE, OPTIONS');
-        if ($request->getMethod() == 'OPTIONS') return true;
+        if ($request->getMethod() == 'OPTIONS') {
+            header('Access-Control-Allow-Origin: *');
+            header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+            return true;
+        }
 
         $this->setArgs($args);
         $args = $this->getArgs();

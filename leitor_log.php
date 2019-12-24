@@ -119,7 +119,7 @@ function leitorLog($log) {
 }
 
 $nome_arq = isset($_GET['arq']) ? $_GET['arq'] : date('d-m-Y');
-$arq = './logs/'.$nome_arq.'.app.log';
+$arq = './app/storage/logs/'.$nome_arq.'.app.log';
 $parts = new SplFileObject($arq);
 $log_horas = [];
 $linhas_erradas = [];
