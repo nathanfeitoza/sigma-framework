@@ -8,4 +8,6 @@ sync.sh
 *.code-workspace
 view/padrao/extensao/stimul/scripts/nao usado/
 view/padrao/extensao/stimul/reports/
+*.log
+no-tracking/
   
