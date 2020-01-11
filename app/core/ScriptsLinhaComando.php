@@ -90,8 +90,11 @@ class ScriptsLinhaComando extends Model
         return isset($cores[$cor]) ? $cores[$cor] : false;
     }
 
-    public function setMensagem($mensagem, $cor = false, $fundo = false)
-    {
+    public function setMensagem(
+        $mensagem,
+        $cor = false,
+        $fundo = false
+    ) {
         $cor = $this->getCorTexto($cor);
         $fundo = $this->getCorFundo($fundo);
 
@@ -108,7 +111,6 @@ class ScriptsLinhaComando extends Model
 
     public function setErro($msgErro, $codigoErro = 0)
     {
-
         $erroMostar = '['.date('d-m-Y H:i:s').']: Mensagem Erro: '.$msgErro.
             ' - Código: '.$codigoErro.
             ' - Arquivo: '.$this->getArgumento(0);
@@ -119,7 +121,8 @@ class ScriptsLinhaComando extends Model
         exit;
     }
 
-    public function getDadosNaoPodemVirVazios($mensagem) {
+    public function getDadosNaoPodemVirVazios($mensagem) 
+    {
         echo PHP_EOL;
         echo $mensagem;
     
@@ -138,7 +141,8 @@ class ScriptsLinhaComando extends Model
         return $retornar;
     }
     
-    public function getYesOrNot($mensagem) {
+    public function getYesOrNot($mensagem) 
+    {
         echo $mensagem." (s,n): ";
         $retornar = fgets(fopen ("php://stdin","r"));
         $retornar = preg_replace('/\s/', '', $retornar);
@@ -146,7 +150,8 @@ class ScriptsLinhaComando extends Model
         return ($retornar == "s" || $retornar == "y" || (strlen($retornar) == 0)) ? 's' : 'n';
     }
     
-    public function stringVirgulaToArray($mensagem, $padrao = '*') {
+    public function stringVirgulaToArray($mensagem, $padrao = '*') 
+    {
         echo PHP_EOL;
         echo $mensagem;
         $campos = fgets(fopen ("php://stdin","r"));
@@ -157,7 +162,8 @@ class ScriptsLinhaComando extends Model
         return $campos;
     }
     
-    public function printArrayArquivo($array) {
+    public function printArrayArquivo($array) 
+    {
         return "'".implode("','", $array)."'";
     }
 }

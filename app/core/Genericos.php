@@ -156,16 +156,24 @@ class Genericos
         return $saida;
     }
 
-    public static function setStream($valor,$write = true,$stream = 'php://memory', $modo = 'rw')
-    {
+    public static function setStream(
+        $valor,
+        $write = true,
+        $stream = 'php://memory', 
+        $modo = 'rw'
+    ) {
         $fh = fopen($stream, $modo); // Este handler abaixo foi colocado para que o Slim não deixe de exibir um texto muito grande na saída HTTP, por exemplo, um JSON extenso
         $stream = new Stream($fh); // É registrado o Handle no Slim;
         if ($write) $stream->write($valor); // É escrito o retorno
         return $stream;
     }
 
-    public static function jsonDecode($json, $msg_erro=false,$options_json=null,$excep=true)
-    {
+    public static function jsonDecode(
+        $json,
+        $msg_erro = false,
+        $options_json = null,
+        $excep = true
+    ) {
         $msg_erro = is_bool($msg_erro) ? 'O Json enviado não está em um formato válido' : $msg_erro;
         $msg_erro = (string) $msg_erro.'';
         $json = json_decode($json, $options_json);
@@ -201,8 +209,11 @@ class Genericos
         return $schema.'.';
     }
 
-    public static function getUsuarioSCLogado($id_usuario=false, $usar_exception=true,$retorno_nao_encontrado=false)
-    {
+    public static function getUsuarioSCLogado(
+        $id_usuario = false,
+        $usar_exception = true,
+        $retorno_nao_encontrado = false
+    ) {
         if (!isset($_SESSION)) session_start();
         if (isset($_SESSION['usuario_id']) && $id_usuario) return $_SESSION['usuario_id']; // Retorna o login do usuário logado
         if (isset($_SESSION['usr_login']) && $id_usuario != true) return $_SESSION['usr_login']; // Retorna o id do usuário logado
@@ -279,7 +290,7 @@ class Genericos
      */
     public static function getChaveCriptografiaZip()
     {
-        return '#@ABcN1F465NF10'.md5('ZiP5Cr14D0SliNd4M3enT3@N!F->10');
+        return Configuracoes::get('CHAVE_CRIPT_ZIP');
     }
 
     public static function includeExterno($files)
@@ -305,9 +316,7 @@ class Genericos
      * Recebe: String sql
      * Retorna: string sql limpa
      * Autor: Nathan Feitoza
-     * Nome Método: setLimparStringSQL
-     *
-     * @param $string
+     * Nome Método: setLimparStringSQL'#@ABcN1F465NF10'.md5('ZiP5Cr14D0SliNd4M3enT3@N!F->10')
      * @return false|mixed|string
      * @autor Nathan Feitoza
      */

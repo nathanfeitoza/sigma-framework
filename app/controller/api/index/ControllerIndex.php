@@ -20,7 +20,6 @@ class ControllerIndex extends Controller
         $this->setMethodsAceitos(['GET','POST']);
         $this->loadModel('index/index');
         $this->setOutput($this->model_index_index->getTextInicioApi());
-        //$this->setOutputPage('index', ['titulo_pagina' => 'Inicio']);
     }
 
     public function testar()
@@ -50,7 +49,14 @@ class ControllerIndex extends Controller
         } elseif ($this->tipoAcessoApi == 4) {
             $dadosUsuario = $this->getParamSend(['user', 'pass'], true);
             $validar = $model->getAuthLoginPass($dadosUsuario['user'], $dadosUsuario['pass']);
-            if (!$validar) throw new AppException('Usuário ou senha errados ou usário não cadastrado', 10005, 404, 'Usuário ou senha inválido ou as credenciais enviadas não foram cadastradas');
+            if (!$validar) {
+                throw new AppException(
+                    'Usuário ou senha errados ou usário não cadastrado',
+                    10005,
+                    404,
+                    'Usuário ou senha inválido ou as credenciais enviadas não foram cadastradas'
+                );
+            }
             $id = $validar[0]->ID;
             $secret = false;
             $origin = false;
@@ -219,17 +225,7 @@ class ControllerIndex extends Controller
         $application = $pegar;
         $creator = 'InfoAPI';
         $ip_user = $_SERVER['REMOTE_ADDR'];
-        /*
-        $this->loadModel('auth/auth');
-        $model = $this->model_auth_auth;
-
-        $model->db()
-            ->setLogandoComplexo()
-            ->tabela('sc_log')
-            ->campos(['action','description','username','application','creator','ip_user'],
-                [$action,$description, $username, $application, $creator, $ip_user])
-            ->buildQuery('insert');*/
-
+        
         Log::logger()->addInfo('Evento '.$description);
     }
 
@@ -238,7 +234,7 @@ class ControllerIndex extends Controller
         $this->setMethodsAceitos(['POST']);
         $this->loadModel('teste/teste');
         $model = $this->model_teste_teste;
-        //$this->setOutputJson($this->getAllParams());
+        
         $this->setOutputJson($model->adicionar($this->getAllParams()));
     }
 
@@ -247,7 +243,7 @@ class ControllerIndex extends Controller
         $this->setMethodsAceitos(['PUT']);
         $this->loadModel('teste/teste');
         $model = $this->model_teste_teste;
-        //$this->setOutputJson($this->getAllParams());
+        
         $this->setOutputJson($model->atualizar($this->getAllParams()));
     }
 
@@ -257,7 +253,7 @@ class ControllerIndex extends Controller
         $this->loadModel('teste/teste');
         $model = $this->model_teste_teste;
         $id = $this->getParamSend('id', true)['id'];
-        //$this->setOutputJson($this->getAllParams());
+        
         $this->setOutputJson($model->deletar($id));
     }
 
@@ -277,7 +273,7 @@ class ControllerIndex extends Controller
 
             $model->setCamposRetornar($campos_listar);
         }
-        //$this->setOutputJson($this->getAllParams());
+        
         $this->setOutputJson($model->listar($query));
     }
 }
